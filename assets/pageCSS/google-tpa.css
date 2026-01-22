@@ -1,0 +1,195 @@
+/* Body */
+.content {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+}
+.content h1,
+.content h2,
+.content h3,
+.content h4 {
+  scroll-margin-top: 18px;
+}
+.content h1 {
+  font-size: 28px;
+  margin: 0 0 12px;
+}
+.content h2 {
+  font-size: 22px;
+  margin: 28px 0 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.content h3 {
+  font-size: 18px;
+  margin: 20px 0 6px;
+}
+.content h4 {
+  font-size: 16px;
+  margin: 16px 0 6px;
+}
+.content p {
+  margin: 8px 0;
+}
+.muted {
+  color: var(--muted);
+}
+
+/* Utility */
+.pill {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+}
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+th,
+td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+thead th {
+  background: var(--thead-bg);
+  font-weight: 600;
+}
+tbody tr:nth-child(odd) {
+  background: var(--table-row);
+}
+code.inline {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.95em;
+}
+
+/* Code blocks */
+pre {
+  position: relative;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  padding: 14px;
+  border-radius: 10px;
+  overflow: auto;
+}
+pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+}
+.copy {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.copy:hover {
+  border-color: var(--accent);
+}
+
+/* Search */
+.search {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 16px;
+}
+.search input {
+  flex: 1;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+.search .hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.callout {
+  border: 1px dashed var(--border);
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--callout-bg);
+}
+blockquote {
+  border-left: 4px solid var(--accent);
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  background: var(--callout-bg);
+}
+.ok {
+  color: var(--green);
+}
+.warn {
+  color: var(--orange);
+}
+.err {
+  color: var(--red);
+}
+a {
+  color: var(--accent);
+}
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 28px 0;
+}
+
+/* Prevent overflow */
+.wrap {
+  align-items: start;
+}
+.sidebar,
+.content {
+  min-width: 0;
+}
+table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+pre {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: auto;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.active {
+  color: var(--accent) !important;
+  font-weight: bold;
+}
+.remove {
+  text-decoration: line-through !important;
+}

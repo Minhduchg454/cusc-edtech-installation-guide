@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>template web</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          <h4>Đang xem: <code class="inline">upload-limit-studio</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <!-- ===== NỘI DUNG TRANG ===== -->
+        <h1 id="top">cusc_edx_api — HƯỚNG DẪN CÁC API ECOMMERCE</h1>
+        <p class="muted">
+          Bản HTML hoá từ tài liệu TXT. Giữ nguyên endpoint và mẫu JSON/cURL để
+          tích hợp nhanh với dịch vụ thanh toán (Node.js).
+        </p>
+
+        <h2 id="base">BASE URL CHUNG</h2>
+        <div class="callout">
+          <p>Tất cả endpoint đều nằm dưới namespace:</p>
+          <pre><button class="copy">Copy</button><code>/api/cusc-edx-api/</code></pre>
+          <p>Ví dụ khi chạy local:</p>
+          <pre><button class="copy">Copy</button><code>http://localhost:8000/api/cusc-edx-api/...</code></pre>
+        </div>
+
+        <h2 id="auth">1) AUTH GIỮA NODE.JS VÀ LMS</h2>
+        <p>Gần như mọi API dùng cùng cơ chế bảo vệ bằng header:</p>
+        <pre><button class="copy">Copy</button><code>X-CUSC-PAYMENT-TOKEN: &lt;secret&gt;</code></pre>
+        <p>
+          <code class="inline">&lt;secret&gt;</code> được cấu hình trong
+          <a href="cusc_edx_config.html">Hướng dẫn cài đặt cusc_edx_config</a>
+        </p>
+        <pre><button class="copy">Copy</button><code>CUSC_PAYMENT_API_TOKEN = "chuoi-bi-mat-nao-do"</code></pre>
+        <ul>
+          <li>
+            Nếu <code class="inline">CUSC_PAYMENT_API_TOKEN</code> KHÔNG được
+            set ⇒ các endpoint cho qua (chế độ DEV).
+          </li>
+          <li>
+            Nếu đã set ⇒ request thiếu header/ sai token sẽ trả
+            <code class="inline">401</code> với body
+            <code class="inline">{"error":"Unauthorized"}</code>.
+          </li>
+        </ul>
+
+        <h2 id="ping">2) ENDPOINT PING</h2>
+        <p>Mục đích: kiểm tra app đã load và URL mount đúng.</p>
+        <pre><button class="copy">Copy</button><code>GET /api/cusc-edx-api/ping/</code></pre>
+        <p>Không yêu cầu token.</p>
+        <pre><button class="copy">Copy</button><code>curl http://localhost:8000/api/cusc-edx-api/ping/
+# 200 OK
+# {"ok": true, "app": "cusc_edx_api"}</code></pre>
+
+        <h2 id="create">3) TẠO ORDER TỪ NODE.JS</h2>
+        <pre><button class="copy">Copy</button><code>POST /api/cusc-edx-api/orders/create/</code></pre>
+        <p>Yêu cầu: Header token (nếu server có cấu hình) và Body JSON.</p>
+        <pre><button class="copy">Copy</button><code>{
+  "course_id": "course-v1:ORG+CODE+RUN",
+  "amount": 1200000,
+  "currency": "VND",                // optional, default "VND"
+  "external_order_id": "ABC123",    // optional: id bên Node
+  "extra_data": { },                 // optional: thông tin thêm
+  "user_id": 5                       // hoặc dùng username / email
+  // "username": "student01"
+  // "email": "sv@cusc.ctu.edu.vn"
+}</code></pre>
+        <ul>
+          <li>
+            Phải truyền ít nhất 1 trong 3:
+            <code class="inline">user_id | username | email</code>.
+          </li>
+          <li>
+            <code class="inline">amount</code> có thể là số hoặc string (server
+            tự convert sang Decimal).
+          </li>
+          <li>
+            Thiếu <code class="inline">course_id</code> hoặc
+            <code class="inline">amount</code> ⇒
+            <code class="inline">400</code>.
+          </li>
+        </ul>
+        <pre><button class="copy">Copy</button><code>curl -X POST http://localhost:8000/api/cusc-edx-api/orders/create/ \
+  -H "Content-Type: application/json" \
+  -H "X-CUSC-PAYMENT-TOKEN: your-secret-token" \
+  -d '{
+    "course_id": "course-v1:CTU+CT100+2025_T3",
+    "amount": 1200000,
+    "currency": "VND",
+    "external_order_id": "NODE-ORDER-123",
+    "username": "student01"
+  }'</code></pre>
+
+        <h2 id="detail">4) XEM CHI TIẾT MỘT ORDER</h2>
+        <pre><button class="copy">Copy</button><code>GET /api/cusc-edx-api/orders/&lt;order_id&gt;/</code></pre>
+        <p>
+          Trả về JSON chi tiết (tương tự lúc tạo).
+          <code class="inline">404</code> nếu không tồn tại.
+        </p>
+
+        <h2 id="list">5) LIST ORDER + FILTER</h2>
+        <pre><button class="copy">Copy</button><code>GET /api/cusc-edx-api/orders/?status=pending&username=student01</code></pre>
+        <p>
+          Query params optional: <code class="inline">status</code> (<code
+            class="inline"
+            >pending|paid|failed|canceled|refunded</code
+          >), <code class="inline">user_id</code>,
+          <code class="inline">username</code>,
+          <code class="inline">external_order_id</code>. Server giới hạn tối đa
+          50 bản ghi.
+        </p>
+
+        <h2 id="status">6) NODE.JS BÁO TRẠNG THÁI THANH TOÁN</h2>
+        <pre><button class="copy">Copy</button><code>POST /api/cusc-edx-api/orders/&lt;order_id&gt;/status/</code></pre>
+        <p>Body JSON ví dụ (thành công):</p>
+        <pre><button class="copy">Copy</button><code>{
+  "status": "paid",
+  "payment_info": { "gateway": "vnpay", "txn_id": "VNPAY-TXN-12345" }
+}</code></pre>
+        <ul>
+          <li>
+            Hợp lệ:
+            <code class="inline">pending|paid|failed|canceled|refunded</code>.
+          </li>
+          <li>
+            Nếu <code class="inline">status=paid</code>: server enroll user vào
+            course (<code class="inline">mode=verified</code>) nếu chưa có.
+          </li>
+        </ul>
+
+        <h2 id="lookup">7) TRA CỨU USER</h2>
+        <pre><button class="copy">Copy</button><code>GET /api/cusc-edx-api/users/lookup/?username=student01
+GET /api/cusc-edx-api/users/lookup/?email=sv@cusc.ctu.edu.vn</code></pre>
+        <p>
+          Yêu cầu ít nhất 1 trong 2: <code class="inline">username</code> hoặc
+          <code class="inline">email</code>. Email so khớp không phân biệt hoa
+          thường.
+        </p>
+
+        <pre><code>{
+  "count": 1,
+  "results": [
+    {
+      "id": 1,
+      "username": "student01",
+      "email": "student01@gmail.com",
+      "is_active": true
+    }
+  ]
+}</code></pre>
+
+        <h2 id="pricing">8) LẤY PRICING THEO COURSE_ID</h2>
+        <pre><button class="copy">Copy</button><code>GET /api/cusc-edx-api/course-pricing/&lt;course_id&gt;/?mode=verified</code></pre>
+        <p>
+          Ví dụ (giữ nguyên dấu <code class="inline">+</code> trong
+          <code class="inline">course_id</code>):
+        </p>
+        <pre><button class="copy">Copy</button><code>/api/cusc-edx-api/course-pricing/course-v1:CTU+CT100+2025_T3/
+/api/cusc-edx-api/course-pricing/course-v1:CTU+CT100+2025_T3/?mode=verified</code></pre>
+        <p>Json:</p>
+        <pre><button class="copy">Copy</button><code>{
+  "course_id": "course-v1:CTU+CT100+2025_T3",
+  "modes": [
+    {
+      "mode_slug": "verified",
+      "mode_display_name": "Verified",
+      "currency": "vnd",
+      "price": "900000",
+      "sku": null,
+      "bulk_sku": null,
+      "expiration_datetime": null,
+      "expiration_date": null,
+      "is_active": null
+    }
+  ]
+}</code></pre>
+        <p>
+          Gợi ý phía Node.js: khi ghép vào URL, dùng
+          <code class="inline">encodeURIComponent(courseId)</code>, Django sẽ tự
+          decode về đúng chuỗi.
+        </p>
+
+        <h2 id="flow">9) GỢI Ý FLOW TÍCH HỢP NODE.JS</h2>
+        <ol>
+          <li>
+            Node nhận yêu cầu → <strong>POST</strong>
+            <code class="inline">/orders/create/</code> ⇒ tạo order
+            <code class="inline">pending</code>, lấy
+            <code class="inline">order_id</code>.
+          </li>
+          <li>Node chuyển hướng người dùng sang cổng thanh toán.</li>
+          <li>
+            Gateway callback thành công, Node xác thực chữ ký →
+            <strong>POST</strong>
+            <code class="inline">/orders/&lt;order_id&gt;/status/</code> với
+            <code class="inline">{"status":"paid","payment_info":{...}}</code> ⇒
+            LMS cập nhật order + enroll.
+          </li>
+          <li>
+            Thanh toán thất bại/hủy → báo
+            <code class="inline">failed</code> hoặc
+            <code class="inline">canceled</code>.
+          </li>
+          <li>
+            Để hiển thị giá front-end → <strong>GET</strong>
+            <code class="inline"
+              >/course-pricing/&lt;course_id&gt;/?mode=verified</code
+            >.
+          </li>
+        </ol>
+
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,284 @@
+<!-- Only copy, no edit -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>template web</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          <h4>Đang xem: <code class="inline">upload-limit-studio</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <!-- ===== NỘI DUNG TRANG ===== -->
+        <h1 id="top">
+          Hướng dẫn tăng giới hạn dung lượng upload file trong Studio (Tutor
+          Open edX)
+        </h1>
+        <p class="muted">
+          Tài liệu này chuyển từ bản TXT sang HTML, giữ nguyên nội dung kỹ thuật
+          và bổ sung tiêu đề, mục lục, nút copy mã lệnh.
+        </p>
+
+        <hr />
+        <h2 id="goals">Mục tiêu</h2>
+        <ul>
+          <li>Mặc định Studio (CMS) chỉ cho upload file ~100MB.</li>
+          <li>
+            Tăng giới hạn (ví dụ 512MB hoặc 1GB) cho cả:
+            <ol>
+              <li>LMS/CMS (Django settings)</li>
+              <li>
+                Proxy Caddy (<code class="inline">request_body.max_size</code>)
+              </li>
+            </ol>
+          </li>
+        </ul>
+
+        <h2 id="assumptions">Giả định</h2>
+        <ul>
+          <li>
+            Tutor local (v20.x, Indigo) với domain:
+            <ul>
+              <li>LMS: <code class="inline">http://local.openedx.io</code></li>
+              <li>
+                Studio:
+                <code class="inline">http://studio.local.openedx.io</code>
+              </li>
+            </ul>
+          </li>
+          <li>
+            Đã cài Tutor (kiểm tra bằng
+            <code class="inline">tutor --version</code>).
+          </li>
+        </ul>
+
+        <hr />
+        <h2 id="check-current">1. Kiểm tra giới hạn hiện tại trong CMS</h2>
+        <pre><button class="copy">Copy</button><code>tutor local run cms ./manage.py cms shell -c "
+from django.conf import settings as s
+print('MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB =', getattr(s, 'MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB', 'missing'))
+print('UPLOAD_CHUNK_SIZE_IN_MB =', getattr(s, 'UPLOAD_CHUNK_SIZE_IN_MB', 'missing'))
+"</code></pre>
+        <p>Kết quả mặc định thường thấy:</p>
+        <pre><code>MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 100
+UPLOAD_CHUNK_SIZE_IN_MB = 10</code></pre>
+
+        <hr />
+        <h2 id="cms-settings">2. Tăng giới hạn ở CMS (Django settings)</h2>
+        <h3 id="yaml-plugin">2.1. Dùng plugin YAML</h3>
+        <ol>
+          <li>Tạo file plugin cấu hình (nếu chưa có):</li>
+        </ol>
+        <pre><button class="copy">Copy</button><code>mkdir -p ~/.local/share/tutor-plugins
+nano ~/.local/share/tutor-plugins/override_setting.yml</code></pre>
+
+        <p>Nội dung mẫu (tăng lên 1024MB = 1GB):</p>
+        <pre><button class="copy">Copy</button><code class="yaml">name: override_setting
+version: "1.0.0"
+
+patches:
+  openedx-cms-production-settings: |
+    # Max size của 1 file upload trong Studio
+    MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 1024
+
+    # Kích thước mỗi chunk upload (không bắt buộc, nhưng nên tăng)
+    UPLOAD_CHUNK_SIZE_IN_MB = 50</code></pre>
+
+        <ol start="2">
+          <li>Bật plugin và render lại cấu hình:</li>
+        </ol>
+        <pre><button class="copy">Copy</button><code>tutor plugins enable override_setting
+tutor config save</code></pre>
+
+        <ol start="3">
+          <li>Restart CMS & kiểm tra lại:</li>
+        </ol>
+        <pre><button class="copy">Copy</button><code>tutor local restart cms
+
+tutor local run cms ./manage.py cms shell -c "
+from django.conf import settings as s
+print('MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB =', s.MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB)
+print('UPLOAD_CHUNK_SIZE_IN_MB =', getattr(s, 'UPLOAD_CHUNK_SIZE_IN_MB', 'missing'))
+"</code></pre>
+
+        <p>Kỳ vọng:</p>
+        <pre><code>MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 1024
+UPLOAD_CHUNK_SIZE_IN_MB = 50</code></pre>
+
+        <hr />
+        <h2 id="caddy">3. Tăng giới hạn ở Caddy (Proxy)</h2>
+        <p>
+          Nếu chỉ tăng ở CMS mà không tăng ở Caddy, trình duyệt có thể báo
+          <code class="inline">ERR_CONNECTION_RESET</code> hoặc
+          <code class="inline">413 Payload Too Large</code>; log container
+          <code class="inline">caddy</code> có dạng
+          <code class="inline">status: 413</code> cho đường dẫn
+          <code class="inline">/assets/...</code>.
+        </p>
+
+        <h3 id="caddy-locate">3.1. Xác định Caddyfile mà Tutor đang dùng</h3>
+        <pre><button class="copy">Copy</button><code>ROOT=$(tutor config printroot)
+cat "$ROOT/env/apps/caddy/Caddyfile"
+grep -n "studio.local.openedx.io" "$ROOT/env/apps/caddy/Caddyfile" -nA12</code></pre>
+
+        <p>Ví dụ block cấu hình Studio:</p>
+        <pre><code>studio.local.openedx.io{$default_site_port} {{
+    @favicon_matcher {{
+        path_regexp ^/favicon.ico$
+    }}
+    rewrite @favicon_matcher /theming/asset/images/favicon.ico
+
+    import proxy "cms:8000"
+
+    handle_path /* {{
+        request_body {{
+            max_size 250MB
+        }}
+    }}
+}}</code></pre>
+
+        <h3 id="caddy-edit">3.2. Chỉnh tay Caddyfile (cách đơn giản)</h3>
+        <ol>
+          <li>Mở file để sửa và tăng lên 1GB (1024MB):</li>
+        </ol>
+        <pre><button class="copy">Copy</button><code>nano "$ROOT/env/apps/caddy/Caddyfile"</code></pre>
+
+        <p>
+          Trong block <code class="inline">studio.local.openedx.io{...}</code>,
+          sửa:
+        </p>
+        <pre><code>handle_path /* {{
+    request_body {{
+        max_size 1024MB
+    }}
+}}</code></pre>
+
+        <ol start="2">
+          <li>Lưu file & restart Caddy:</li>
+        </ol>
+        <pre><button class="copy">Copy</button><code>tutor local restart caddy</code></pre>
+
+        <ol start="3">
+          <li>Kiểm tra nhanh:</li>
+        </ol>
+        <pre><button class="copy">Copy</button><code>grep -n "studio.local.openedx.io" "$ROOT/env/apps/caddy/Caddyfile" -nA8
+grep -n "max_size" "$ROOT/env/apps/caddy/Caddyfile"</code></pre>
+
+        <p>Kỳ vọng</p>
+        <pre><code>studio.local.openedx.io{$default_site_port} {{
+    @favicon_matcher {{
+        path_regexp ^/favicon.ico$
+    }}
+    rewrite @favicon_matcher /theming/asset/images/favicon.ico
+
+    import proxy "cms:8000"
+
+    handle_path /* {{
+        request_body {{
+            max_size 1024MB
+        }}
+    }}
+}}</code></pre>
+
+        <div class="callout">
+          <strong>Lưu ý khi chỉnh tay Caddyfile:</strong> Mỗi lần chạy
+          <code class="inline">tutor config save</code>, Tutor có thể render lại
+          file từ template + plugin. Hạn chế sửa tay nếu sau đó sẽ chạy lại lệnh
+          này; hoặc lặp lại thao tác sửa.
+        </div>
+
+        <hr />
+        <h2 id="debug">4. Kiểm tra & debug</h2>
+        <h3 id="test-upload">4.1. Test upload từ Studio</h3>
+        <ol>
+          <li>
+            Vào Studio:
+            <code class="inline">http://studio.local.openedx.io</code>
+          </li>
+          <li>
+            Chọn course cần test → tab
+            <strong>Files &amp; Uploads (Files)</strong>
+          </li>
+          <li>Upload file lớn (ví dụ 600MB nếu đã set limit 1GB)</li>
+        </ol>
+
+        <h3 id="read-logs">4.2. Nếu vẫn lỗi – đọc log nhanh</h3>
+        <p>Mở 2 terminal để xem log Caddy và CMS, sau đó thử upload lại:</p>
+        <pre><button class="copy">Copy</button><code>tutor local logs caddy -f
+tutor local logs cms -f</code></pre>
+        <ul>
+          <li>
+            Nếu log Caddy báo <code class="inline">status: 413</code> ⇒ Giới hạn
+            <code class="inline">max_size</code> vẫn nhỏ hơn file.
+          </li>
+          <li>
+            Nếu không có 413 ở Caddy nhưng CMS báo lỗi khác ⇒ xem traceback
+            trong log CMS.
+          </li>
+        </ul>
+
+        <hr />
+        <h2 id="notes">5. Gợi ý thực tế</h2>
+        <ul>
+          <li>
+            Không nên cho phép upload file vài GB trực tiếp vào Studio vì ảnh
+            hưởng MongoDB & tốc độ export/import course.
+          </li>
+          <li>
+            Với video lớn:
+            <ul>
+              <li>Upload lên object storage (S3, MinIO, ...), hoặc</li>
+              <li>
+                Dùng dịch vụ streaming (YouTube, Vimeo, HLS server), sau đó chỉ
+                nhúng URL trong course.
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <hr />
+        <h2 id="summary">Kết luận</h2>
+        <ul>
+          <li>
+            Để tăng size upload trong Studio, cần chỉnh đồng bộ ở
+            <strong>2 chỗ</strong>:
+            <ol>
+              <li>
+                CMS:
+                <code class="inline">MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB</code>,
+                <code class="inline">UPLOAD_CHUNK_SIZE_IN_MB</code>
+              </li>
+              <li>
+                Proxy Caddy:
+                <code class="inline">request_body.max_size</code> cho host
+                Studio
+              </li>
+            </ol>
+          </li>
+          <li>
+            Luôn test lại bằng cách upload file lớn và đọc log nếu có lỗi.
+          </li>
+        </ul>
+
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

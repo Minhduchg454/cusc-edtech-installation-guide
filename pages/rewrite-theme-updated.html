@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng dẫn thiết lập & áp dụng theme trong Tutor</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          <h4>Đang xem: <code class="inline">upload-limit-studio</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <!-- ===== NỘI DUNG TRANG ===== -->
+
+        <h1 id="top">
+          DEV THEME — Hướng dẫn thiết lập & áp dụng theme trong Tutor
+        </h1>
+        <p class="muted">
+          Tài liệu này giữ nguyên giao diện/UX của bản gốc, nhưng nội dung đã
+          được rút gọn theo checklist bạn cung cấp để thao tác nhanh khi phát
+          triển theme trong môi trường <code class="inline">tutor dev</code>.
+        </p>
+
+        <hr />
+        <h2 id="setup">Yêu cầu</h2>
+        <ul>
+          <li>
+            Đã cài <a href="dev-setup.html">môi trường phát triển Tutor</a>.
+          </li>
+          <li>
+            Đã cài phần mềm quản lý file <strong>nautilus</strong> trên Ubuntu.
+          </li>
+          <li>
+            Đã cài phầm mềm editor <strong>subline text</strong> trên Ubuntu.
+          </li>
+        </ul>
+
+        <hr />
+
+        <h2 id="setup">Setup khung sườn</h2>
+        <p><strong>Đi tới thư mục themes của Open edX trong Tutor:</strong></p>
+        <pre><button class="copy">Copy</button><code>cd $(tutor config printroot)/env/build/openedx/themes</code></pre>
+
+        <div class="callout">
+          <strong>Mẹo (tuỳ chọn):</strong> Cài
+          <code class="inline">nautilus</code> để mở giao diện quản lý file rồi
+          chạy:
+        </div>
+        <pre><button class="copy">Copy</button><code>nautilus .</code></pre>
+
+        <p>
+          <strong
+            >Kiểm tra xem có thư mục <code class="inline">indigo</code> hay
+            chưa.</strong
+          >
+        </p>
+
+        <h3 id="setup-has-indigo">
+          Trường hợp <span class="ok">đã có</span>
+          <code class="inline">indigo</code>:
+        </h3>
+        <ol>
+          <li>
+            Chuột phải trong cửa sổ thư mục và chọn <em>New Folder</em> (hoặc
+            nhấn <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>N</kbd>).
+          </li>
+          <li>
+            Đặt tên thư mục mới (đây chính là <strong>tên theme</strong> của
+            bạn).
+          </li>
+          <li>
+            Mở thư mục <code class="inline">indigo</code>,
+            <strong>copy</strong> các thư mục con của nó:
+            <code class="inline">cms</code>, <code class="inline">lms</code>,
+            <code class="inline">tasks</code>.
+          </li>
+          <li>
+            <strong>Dán</strong> những thư mục vừa copy vào thư mục theme mới
+            tạo ở bước 2.
+          </li>
+        </ol>
+
+        <h3 id="setup-no-indigo">
+          Trường hợp <span class="warn">chưa có</span>
+          <code class="inline">indigo</code>:
+        </h3>
+        <ol>
+          <li>
+            Nếu chưa ở sẵn trong thư mục <code class="inline">themes</code> thì
+            chạy:
+            <pre><button class="copy">Copy</button><code>cd $(tutor config printroot)/env/build/openedx/themes</code></pre>
+          </li>
+          <li>
+            Clone repo theme mẫu từ GitHub:
+            <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/tutor-edx-mytheme.git</code></pre>
+          </li>
+        </ol>
+
+        <hr />
+        <h2 id="set-theme">Dev mount thẳng thư mục build của Tutor</h2>
+        <p>Tạo (hoặc sửa):</p>
+        <pre><code>subl ~/.local/share/tutor/env/dev/docker-compose.override.yml</code></pre>
+        <p>Thêm (hoặc sửa) đoạn sau trong file yml:</p>
+        <pre><code>services:
+  lms:
+    volumes:
+      - ~/.local/share/tutor/env/build/openedx/themes:/openedx/themes:rw
+  cms:
+    volumes:
+      - ~/.local/share/tutor/env/build/openedx/themes:/openedx/themes:rw</code></pre>
+
+        <p>Set theme của tutor dev sang <strong>tutor-edx-mytheme</strong></p>
+        <pre><button class="copy">Copy</button><code>tutor config save --set LMS_SITE_THEME=tutor-edx-mytheme --set CMS_SITE_THEME=tutor-edx-mytheme</code></pre>
+
+        <p>Kiểm tra:</p>
+        <pre><button class="copy">Copy</button><code>tutor config printvalue LMS_SITE_THEME</code></pre>
+        <blockquote>
+          Kỳ vọng:
+          <pre><code>tutor-edx-mytheme</code></pre>
+        </blockquote>
+
+        <p>Set theme trực tiếp:</p>
+        <pre><button class="copy">Copy</button><code>tutor dev do settheme tutor-edx-mytheme</code></pre>
+
+        <hr />
+        <h2 id="run-dev">Chạy Tutor (Dev)</h2>
+        <p>Khởi động môi trường phát triển:</p>
+        <pre><button class="copy">Copy</button><code>tutor dev start</code></pre>
+
+        <div class="callout">
+          <strong>Lưu ý:</strong> Sau khi set theme, nếu bạn điều chỉnh
+          CSS/SCSS, hãy dùng
+          <code class="inline">tutor dev run watchthemes</code> để tự động biên
+          dịch giao diện.
+        </div>
+
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

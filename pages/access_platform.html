@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng dẫn truy cập local web</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- SIDEBAR (DÙNG CHUNG) -->
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          <h4>Đang xem: <code class="inline">upload-limit-studio</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <main class="content markdown-body">
+        <!-- NÚT MENU MOBILE -->
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <!-- ===== NỘI DUNG TRANG ===== -->
+        <h1 id="top">Hướng dẫn truy cập local web</h1>
+
+        <hr />
+        <h2 id="cusc-wifi">1. Kết nối WiFi cán bộ CUSC</h2>
+
+        <p>
+          Để truy cập được hệ thống nội bộ, máy client cần kết nối vào mạng WiFi
+          cán bộ của CUSC.
+        </p>
+
+        <hr />
+        <h2 id="check-current">2. Kiểm tra kết nối đến máy chủ</h2>
+        <p>Trên máy client windows, mở terminal hoặc cmd chạy</p>
+        <pre><button class="copy">Copy</button><code>ping 172.16.160.134</code></pre>
+        <p>Kết quả:</p>
+        <pre><code>Pinging 172.16.160.134 with 32 bytes of data:
+Reply from 172.16.160.134: bytes=32 time=3ms TTL=63
+Reply from 172.16.160.134: bytes=32 time=2ms TTL=63
+Reply from 172.16.160.134: bytes=32 time=2ms TTL=63
+Reply from 172.16.160.134: bytes=32 time=2ms TTL=63
+
+Ping statistics for 172.16.160.134:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 2ms, Maximum = 3ms, Average = 2ms</code></pre>
+        <p>=> Đã ping thành công</p>
+        <hr />
+        <h2 id="cms-settings">
+          3. Thêm cấu hình domain ảo cho host của windows
+        </h2>
+        <p>Trên windows, truy cập đường dẫn</p>
+        <pre><button class="copy">Copy</button><code>C:\Windows\System32\drivers\etc</code></pre>
+
+        <p>
+          Mở file host(file không có đuôi) bằng notepad++(khuyến nghị do cần
+          quyền admin để sửa file host này)
+        </p>
+        <p>Thêm vào cuối file host</p>
+        <pre><button class="copy">Copy</button><code># remote IP
+172.16.160.134  local.openedx.io  studio.local.openedx.io  apps.local.openedx.io</code></pre>
+        <p>=> Save lại(yêu cầu quyền admin)</p>
+
+        <hr />
+        <h2 id="top">3. Vào trình duyệt và truy cập</h2>
+        <p>LMS</p>
+        <pre><button class="copy">Copy</button><code>http://local.openedx.io/</code></pre>
+        <p>Studio</p>
+        <pre><button class="copy">Copy</button><code>http://studio.local.openedx.io/</code></pre>
+        <p>MFE</p>
+        <pre><button class="copy">Copy</button><code>http://apps.local.openedx.io/</code></pre>
+
+        <hr />
+        <h2 id="top"># Nếu không thành công</h2>
+        <p>Thử ssh(2 clients) vào máy chủ</p>
+        <pre><button class="copy">Copy</button><code>ssh dev@172.16.160.134</code></pre>
+        <p>Password</p>
+        <pre><button class="copy">Copy</button><code>123</code></pre>
+        <p>Ở client đầu tiên chạy</p>
+        <pre><button class="copy">Copy</button><code>tutor local start -d</code></pre>
+        <p>=> Khởi chạy nền tảng</p>
+        <p>Ở client thư 2 chạy</p>
+        <pre><button class="copy">Copy</button><code>cd ~/node-payment-demo</code></pre>
+        <p>Chạy container giả lập thanh toán</p>
+        <pre><button class="copy">Copy</button><code>docker run --rm -p 5000:5000 --env-file .env --add-host local.openedx.io:host-gateway node-payment-demo:latest</code></pre>
+
+        <p>Sao đó thử vào trình duyệt và truy cập các link trên</p>
+        <hr />
+        <strong
+          >Nền tảng vẫn đang trong quá trình thử nghiệm, chưa có domain riêng
+          nên các bước setup truy cập từ ngoài sẽ khá phức tạp.</strong
+        >
+        <br />
+        <strong>Nền tảng vẫn có khả năng xuất hiện lỗi.</strong>
+      </main>
+    </div>
+
+    <!-- overlay cho mobile -->
+    <div id="overlay" class="overlay"></div>
+
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>template web</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          <h4>Đang xem: <code class="inline">upload-limit-studio</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <!-- ===== NỘI DUNG TRANG ===== -->
+        <h1 id="top">
+          Tutor Plugin: <code class="inline">cusc_edx_config</code>
+        </h1>
+        <p class="muted">
+          Plugin cấu hình tối giản cho Open edX/Tutor: tăng giới hạn upload ở
+          Studio (CMS) và cung cấp 2 biến cấu hình trên LMS:
+          <code class="inline">CUSC_PAYMENT_API_TOKEN</code> (shared secret) và
+          <code class="inline">CUSC_CHECKOUT_URL</code> (URL trang checkout
+          Node). Không thêm container hay phụ thuộc mới.
+        </p>
+
+        <h2 id="plugin-file">1) File plugin (copy-paste)</h2>
+        <p>
+          Dán nội dung dưới đây vào
+          <code class="inline"
+            >~/.local/share/tutor-plugins/cusc_edx_config.yml</code
+          >:
+        </p>
+        <pre><button class="copy">Copy</button><code>name: cusc_edx_config
+version: "1.0.0"
+
+config:
+  defaults:
+    # Mặc định: đổi bằng `tutor config save --set CUSC_CHECKOUT_URL=...`
+    CUSC_CHECKOUT_URL: "http://localhost:5000/checkout"
+    CUSC_PAYMENT_API_TOKEN: ""
+
+patches:
+  # LMS: nhét biến vào cả common/dev/prod (dev là cái bạn đang chạy)
+  openedx-lms-common-settings: |
+    # CUSC payment token dùng cho Node <-> LMS
+    # CUSC_PAYMENT_API_TOKEN = "]lThul5/$PIYVGDTBE;*rRxb3|Lc7o~,dhN;rbY6gpOGO!.ME3:$n+tI4&7HP7;"
+
+    CUSC_PAYMENT_API_TOKEN = "{{ CUSC_PAYMENT_API_TOKEN | default('123456789') }}"
+
+    # === CUSC custom checkout URL for Node service === 
+    CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
+
+  openedx-lms-development-settings: |
+    CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
+
+  openedx-lms-production-settings: |
+    CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
+
+  # (tuỳ chọn) CMS nếu cần
+  openedx-cms-production-settings: |
+    MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 512
+    UPLOAD_CHUNK_SIZE_IN_MB = 50</code></pre>
+
+        <div class="callout">
+          <strong>Giải thích nhanh:</strong>
+          <ul>
+            <li>
+              <code class="inline">CUSC_PAYMENT_API_TOKEN</code>: shared secret
+              để dịch vụ Node.js gọi API nội bộ LMS qua header
+              <code class="inline">X-CUSC-PAYMENT-TOKEN</code>.
+            </li>
+            <li>
+              <code class="inline">CUSC_CHECKOUT_URL</code>: URL trang thanh
+              toán (Node) để LMS/MFE có thể redirect người học (ví dụ:
+              <code class="inline">http://localhost:5000/checkout</code>).
+            </li>
+            <li>
+              <code class="inline">MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB</code> &
+              <code class="inline">UPLOAD_CHUNK_SIZE_IN_MB</code>: giới hạn
+              upload ở Studio.
+            </li>
+          </ul>
+        </div>
+
+        <h2 id="install">2) Cài đặt plugin vào Tutor</h2>
+        <h3>2.1 Xác định thư mục plugins</h3>
+        <pre><button class="copy">Copy</button><code>tutor plugins printroot
+# ví dụ: ~/.local/share/tutor-plugins</code></pre>
+
+        <h3>2.2 Sao chép file vào thư mục đó</h3>
+        <pre><button class="copy">Copy</button><code>cp ./cusc_edx_config.yml ~/.local/share/tutor-plugins/cusc_edx_config.yml</code></pre>
+
+        <h3>2.3 Bật plugin & render lại cấu hình</h3>
+        <pre><button class="copy">Copy</button><code>tutor plugins enable cusc_edx_config
+# render lại templates & patches
+tutor config save</code></pre>
+
+        <h3>2.4 Thiết lập biến cấu hình (ví dụ DEV)</h3>
+        <p>
+          <span class="badge">Theo yêu cầu</span> Thiết lập URL checkout chạy ở
+          cổng <code class="inline">5000</code> và đặt token tạm:
+        </p>
+        <pre><button class="copy">Copy</button><code>tutor config save \
+  --set CUSC_CHECKOUT_URL="http://localhost:5000/checkout" \
+  --set CUSC_PAYMENT_API_TOKEN="123"</code></pre>
+        <p class="muted">
+          Bạn có thể đổi lại tuỳ môi trường (prod staging...). Nếu không set,
+          giá trị mặc định là
+          <code class="inline">http://localhost:3000/checkout</code>.
+        </p>
+
+        <h3>2.5 Khởi động lại dịch vụ</h3>
+        <pre><button class="copy">Copy</button><code># Local
+tutor local restart lms cms
+
+# Dev mode
+tutor dev restart lms cms
+
+# Kubernetes
+tutor k8s upgrade</code></pre>
+        <p class="muted">
+          Vì plugin chỉ vá settings, thường
+          <span class="ok">không cần</span> build lại image.
+        </p>
+
+        <h2 id="verify">3) Kiểm tra cấu hình đã áp dụng</h2>
+        <h3>3.1 Kiểm tra trên CMS (Studio)</h3>
+        <pre><button class="copy">Copy</button><code># MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB
+tutor local run cms ./manage.py cms shell -c "from django.conf import settings; print(settings.MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB)"
+
+# UPLOAD_CHUNK_SIZE_IN_MB
+tutor local run cms ./manage.py cms shell -c "from django.conf import settings; print(getattr(settings, 'UPLOAD_CHUNK_SIZE_IN_MB', None))"</code></pre>
+
+        <h3>3.2 Kiểm tra trên LMS</h3>
+        <pre><button class="copy">Copy</button><code># Không in token ra màn hình, chỉ kiểm tra có/không
+tutor local run lms ./manage.py lms shell -c "from django.conf import settings; print(bool(getattr(settings, 'CUSC_PAYMENT_API_TOKEN', None)))"
+
+# Xem giá trị CUSC_CHECKOUT_URL hiện tại
+tutor local run lms ./manage.py lms shell -c "from django.conf import settings; print(getattr(settings, 'CUSC_CHECKOUT_URL', None))"</code></pre>
+
+        <h2 id="notes">4) Ghi chú & bảo mật</h2>
+        <ul>
+          <li>
+            <strong>Token bảo mật:</strong> Không commit token thật lên Git
+            public. Ở production, dùng chuỗi dài, ngẫu nhiên và xoay vòng khi
+            lộ.
+          </li>
+          <li>
+            <strong>Quản lý giá trị:</strong>
+            <code class="inline">config.defaults</code> cung cấp giá trị mặc
+            định. Ghi đè bằng
+            <code class="inline">tutor config save --set ...</code> cho từng môi
+            trường.
+          </li>
+          <li>
+            <strong>Đọc token từ ENV (tuỳ chọn):</strong> Nếu muốn, bạn có thể
+            sửa patch để lấy token từ biến môi trường thay vì hard-code:
+          </li>
+        </ul>
+        <pre><button class="copy">Copy</button><code>openedx-lms-common-settings: |
+  import os
+  CUSC_PAYMENT_API_TOKEN = os.environ.get("CUSC_PAYMENT_API_TOKEN") or "dev-secret"
+  # Node.js gửi: X-CUSC-PAYMENT-TOKEN: &lt;token&gt;</code></pre>
+        <ul>
+          <li class="warn">
+            Đồng bộ token giữa Node.js và LMS (ENV/secret) để request không bị
+            401.
+          </li>
+          <li class="ok">
+            Ở DEV, có thể dùng token ngắn (ví dụ
+            <code class="inline">123</code>) để debug nhanh, sau đó đổi sang
+            chuỗi mạnh hơn.
+          </li>
+        </ul>
+
+        <h2 id="nginx">5) Proxy/Nginx khuyến nghị (tuỳ chọn)</h2>
+        <p>
+          Nếu Node checkout chạy cổng 5000 trên cùng máy, có thể reverse-proxy
+          ra subpath/domain ổn định.
+        </p>
+        <pre><button class="copy">Copy</button><code># NGINX ví dụ
+location /checkout/ {
+  proxy_pass http://127.0.0.1:5000/checkout/;
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}</code></pre>
+        <p class="muted">
+          Giữ <code class="inline">CUSC_CHECKOUT_URL</code> trỏ đến URL public
+          tương ứng (vd.
+          <code class="inline">https://apps.local.openedx.io/checkout</code>).
+        </p>
+
+        <h2 id="rollback">6) Rollback/Gỡ plugin</h2>
+        <pre><button class="copy">Copy</button><code>tutor plugins disable cusc_edx_config
+tutor config save
+# Khởi động lại dịch vụ
+tutor local restart lms cms</code></pre>
+
+        <h2 id="faq">7) FAQ nhanh</h2>
+        <ul>
+          <li>
+            <strong>Có cần build image?</strong> Thường là <em>không</em>.
+            Plugin chỉ vá settings đã render.
+          </li>
+          <li>
+            <strong>Áp dụng ở đâu?</strong> CMS: giới hạn upload; LMS:
+            <code class="inline">CUSC_PAYMENT_API_TOKEN</code> &amp;
+            <code class="inline">CUSC_CHECKOUT_URL</code>.
+          </li>
+          <li>
+            <strong>Dev vs Prod?</strong> Cùng một plugin. Ở Prod nên dùng
+            <code class="inline">tutor config save --set ...</code> (hoặc
+            ENV/secret manager) để đặt giá trị riêng.
+          </li>
+        </ul>
+
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

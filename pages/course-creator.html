@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bật Course Creation Group cho Open edX với Tutor (Local)</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          <h4>Đang xem: <code class="inline">upload-limit-studio</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <!-- ===== NỘI DUNG TRANG ===== -->
+        <h1 id="top">
+          Bật Course Creation Group cho Open edX với Tutor (Local)
+        </h1>
+        <p class="muted">
+          Tài liệu này hướng dẫn <strong>end‑to‑end</strong>: bật cờ
+          <code class="inline">FEATURES["ENABLE_CREATOR_GROUP"]</code> trong
+          Tutor, tạo course creator, cấu hình &amp; cấp quyền
+          <strong>Organizations</strong> trong Studio Admin, kiểm tra, xử lý lỗi
+          thường gặp và ghi chú bảo mật.
+        </p>
+
+        <hr />
+        <h2 id="goals">Mục tiêu</h2>
+        <ul>
+          <li>Có thể tạo (tạm gọi) <strong>giáo viên</strong>.</li>
+          <li>
+            Giáo viên có quyền truy cập vào <strong>Course Studio</strong> với
+            các hạn chế về <strong>Organizations</strong> (chỉ sửa/tạo mới
+            course cho Organizations được chỉ định).
+          </li>
+        </ul>
+
+        <hr />
+        <h2 id="env">Môi trường giả định</h2>
+        <ul>
+          <li>Tutor chế độ <strong>Local</strong> (Docker đã cài sẵn).</li>
+          <li>
+            Studio Admin (superuser):
+            <code class="inline">http://studio.local.openedx.io/admin/</code>
+          </li>
+          <li>
+            Quản lý Organizations:
+            <code class="inline"
+              >http://studio.local.openedx.io/admin/organizations/organization/</code
+            >
+          </li>
+        </ul>
+
+        <hr />
+        <h2 id="plugin">
+          Tạo plugin <code class="inline">course_creator</code>: bật cờ,
+          CORS/CSRF &amp; email nhận yêu cầu
+        </h2>
+        <blockquote>Đang dùng định dạng <strong>YAML</strong>.</blockquote>
+
+        <h3 id="create-file">1) Tạo file YAML</h3>
+        <pre><button class="copy">Copy</button><code>cd $(tutor plugins printroot)
+touch course_creator.yaml</code></pre>
+
+        <h3 id="edit-file">2) Mở &amp; chỉnh nội dung</h3>
+        <pre><button class="copy">Copy</button><code>subl course_creator.yaml</code></pre>
+        <p>
+          <strong
+            >Nội dung file
+            <code class="inline">course_creator.yaml</code></strong
+          >:
+        </p>
+        <pre><button class="copy">Copy</button><code class="yaml">name: creator-group
+version: 0.1.0
+config:
+  defaults:
+    CREATOR_GROUP_REQUEST_EMAIL: admin@example.com
+patches:
+  openedx-cms-production-settings: |
+    # creator-group plugin (production)
+    FEATURES["ENABLE_CREATOR_GROUP"] = True
+    FEATURES["STUDIO_REQUEST_EMAIL"] = "{{ CREATOR_GROUP_REQUEST_EMAIL }}"
+    CORS_ORIGIN_WHITELIST = list(set((CORS_ORIGIN_WHITELIST or []) + [
+      "http://apps.local.openedx.io", "https://apps.local.openedx.io",
+    ]))
+    CORS_ALLOW_CREDENTIALS = True
+    CSRF_TRUSTED_ORIGINS = list(set((CSRF_TRUSTED_ORIGINS or []) + [
+      "http://apps.local.openedx.io", "https://apps.local.openedx.io",
+    ]))
+    SESSION_COOKIE_DOMAIN = ".local.openedx.io"
+    CSRF_COOKIE_DOMAIN = ".local.openedx.io"
+
+  openedx-cms-development-settings: |
+    # creator-group plugin (development)
+    FEATURES["ENABLE_CREATOR_GROUP"] = True
+    FEATURES["STUDIO_REQUEST_EMAIL"] = "{{ CREATOR_GROUP_REQUEST_EMAIL }}"
+    CORS_ORIGIN_WHITELIST = list(set((CORS_ORIGIN_WHITELIST or []) + [
+      "http://apps.local.openedx.io", "https://apps.local.openedx.io",
+    ]))
+    CORS_ALLOW_CREDENTIALS = True
+    CSRF_TRUSTED_ORIGINS = list(set((CSRF_TRUSTED_ORIGINS or []) + [
+      "http://apps.local.openedx.io", "https://apps.local.openedx.io",
+    ]))
+    SESSION_COOKIE_DOMAIN = ".local.openedx.io"
+    CSRF_COOKIE_DOMAIN = ".local.openedx.io"
+
+  openedx-lms-production-settings: |
+    # CORS/CSRF cho LMS (OAuth2 /oauth2/authorize)
+    CORS_ORIGIN_WHITELIST = list(set((CORS_ORIGIN_WHITELIST or []) + [
+      "http://apps.local.openedx.io", "https://apps.local.openedx.io",
+      "http://studio.local.openedx.io", "https://studio.local.openedx.io",
+    ]))
+    CORS_ALLOW_CREDENTIALS = True
+    CSRF_TRUSTED_ORIGINS = list(set((CSRF_TRUSTED_ORIGINS or []) + [
+      "http://apps.local.openedx.io", "https://apps.local.openedx.io",
+      "http://studio.local.openedx.io", "https://studio.local.openedx.io",
+    ]))
+    SESSION_COOKIE_DOMAIN = ".local.openedx.io"
+    CSRF_COOKIE_DOMAIN = ".local.openedx.io"
+    # (tùy chọn – thường không cần)
+    # CORS_ALLOW_HEADERS = list(set((CORS_ALLOW_HEADERS or []) + ["Content-Type","Authorization"]))
+
+  openedx-lms-development-settings: |
+    # CORS/CSRF cho LMS (dev)
+    CORS_ORIGIN_WHITELIST = list(set((CORS_ORIGIN_WHITELIST or []) + [
+      "http://apps.local.openedx.io", "https://apps.local.openedx.io",
+      "http://studio.local.openedx.io", "https://studio.local.openedx.io",
+    ]))
+    CORS_ALLOW_CREDENTIALS = True
+    CSRF_TRUSTED_ORIGINS = list(set((CSRF_TRUSTED_ORIGINS or []) + [
+      "http://apps.local.openedx.io", "https://apps.local.openedx.io",
+      "http://studio.local.openedx.io", "https://studio.local.openedx.io",
+    ]))
+    SESSION_COOKIE_DOMAIN = ".local.openedx.io"
+    CSRF_COOKIE_DOMAIN = ".local.openedx.io"</code></pre>
+
+        <h3 id="enable-plugin">
+          3) Bật plugin <code class="inline">course_creator</code>
+        </h3>
+        <p>
+          Cài email nhận thông báo yêu cầu cấp quyền vào tổ chức (Organization)
+          và bật plugin:
+        </p>
+        <pre><button class="copy">Copy</button><code>tutor config save --set CREATOR_GROUP_REQUEST_EMAIL="email_received@gmail.com"
+ tutor plugins enable course_creator</code></pre>
+        <div class="callout">
+          <strong>Quan trọng:</strong> Đổi
+          <code class="inline">email_received@gmail.com</code> thành email thật
+          để nhận request từ giáo viên.
+        </div>
+
+        <h3 id="verify-plugin">4) Kiểm tra plugin</h3>
+        <pre><button class="copy">Copy</button><code>tutor local run cms ./manage.py cms shell -c \
+ 'from django.conf import settings; print("ENABLE_CREATOR_GROUP:", settings.FEATURES.get("ENABLE_CREATOR_GROUP"), " | STUDIO_REQUEST_EMAIL:", settings.FEATURES.get("STUDIO_REQUEST_EMAIL"))'</code></pre>
+        <blockquote>
+          <strong>Kết quả đúng kỳ vọng:</strong>
+          <pre><code>ENABLE_CREATOR_GROUP: True  | STUDIO_REQUEST_EMAIL: nhnama23030@cusc.ctu.edu.vn</code></pre>
+          <em>Lưu ý:</em> <code class="inline">STUDIO_REQUEST_EMAIL</code> phải
+          là email bạn vừa cấu hình, không phải ví dụ.
+        </blockquote>
+
+        <hr />
+        <h2 id="org">Tạo Organization (trường)</h2>
+        <p>
+          <strong>Vào Studio Admin:</strong>
+          <code class="inline"
+            >http://studio.local.openedx.io/admin/organizations/organization/</code
+          >
+          → <strong>Add organization</strong>
+        </p>
+        <ul>
+          <li>
+            <strong>Name</strong>: <code class="inline">Ten Truong</code> (có
+            thể có dấu, khoảng trắng)
+          </li>
+          <li>
+            <strong>Short Name</strong>:
+            <code class="inline">TENTRUONGVIETTAT</code> —
+            <span class="warn"><strong>Lưu ý:</strong></span> chuỗi ngắn, duy
+            nhất; không dùng khoảng trắng; ký tự đặc biệt được phép:
+            <code class="inline">.</code>, <code class="inline">-</code>,
+            <code class="inline">_</code>.
+          </li>
+          <li><strong>Logo</strong>: ảnh vuông (tùy chọn)</li>
+          <li><strong>Description</strong>: (tùy chọn)</li>
+          <li><strong>Active</strong>: ✓</li>
+        </ul>
+
+        <hr />
+        <h2 id="user">Tạo User (giáo viên)</h2>
+        <p>
+          <strong>Vào Studio Admin:</strong>
+          <code class="inline"
+            >http://studio.local.openedx.io/admin/auth/user/</code
+          >
+          → <strong>ADD USER</strong>
+        </p>
+        <h4>Thông tin đăng nhập</h4>
+        <ul>
+          <li>
+            <strong>Username</strong>:
+            <code class="inline">giaovien1</code> (≤150 ký tự; chữ cái, số và
+            @/./+/-/_)
+          </li>
+          <li>
+            <strong>Password</strong>: theo chính sách: tối thiểu 8 ký tự; không
+            quá giống thông tin cá nhân; ≤75 ký tự.
+          </li>
+          <li><strong>Staff status</strong>: không tick</li>
+          <li><strong>Superuser status</strong>: không tick</li>
+        </ul>
+        <h4>Thông tin cá nhân</h4>
+        <p>(Tùy chọn, có thể cập nhật sau.)</p>
+        <div class="callout">
+          <strong>Quan trọng:</strong> nhớ tick <strong>Is active</strong> ✓
+        </div>
+        <p>Nhấn <strong>SAVE</strong>.</p>
+
+        <hr />
+        <h2 id="request-access">Xin quyền truy cập vào Organization</h2>
+        <h3>Phía giáo viên</h3>
+        <ol>
+          <li>
+            Vào Studio:
+            <code class="inline"
+              >http://studio.local.openedx.io/login/edx-oauth2/</code
+            >
+            → đăng nhập bằng tài khoản giáo viên.
+          </li>
+          <li>
+            Nếu chưa thuộc Organization nào: tìm mục
+            <strong>Becoming a course creator in Studio</strong> → chọn
+            <strong>Request the ability to create courses</strong>.
+          </li>
+          <li>
+            Thông báo hiển thị:
+            <em>“request is currently being reviewed...”</em>
+          </li>
+        </ol>
+        <p>
+          Hệ thống gửi email về
+          <code class="inline">CREATOR_GROUP_REQUEST_EMAIL</code> để thông báo
+          có yêu cầu mới.
+        </p>
+
+        <h3>Phía Admin</h3>
+        <ol>
+          <li>
+            Mở Studio Admin:
+            <code class="inline"
+              >http://studio.local.openedx.io/admin/course_creators/coursecreator/</code
+            >
+          </li>
+          <li>
+            Chọn <em>username</em> của giáo viên → cấu hình:
+            <ul>
+              <li><strong>State</strong>: chuyển <strong>granted</strong></li>
+              <li><strong>Note</strong>: tùy chọn</li>
+              <li>
+                <strong>All organizations</strong>: bỏ tick nếu muốn giới hạn
+                theo tổ chức
+              </li>
+              <li>
+                <strong>Organizations</strong>: chọn Organization mà giáo viên
+                được phép tạo/sửa khóa học (tùy chọn này bị vô hiệu nếu đã tick
+                “All organizations”).
+              </li>
+            </ul>
+          </li>
+          <li>Nhấn <strong>SAVE</strong>.</li>
+        </ol>
+        <blockquote>
+          <strong>Kết quả:</strong> tài khoản giáo viên đã được gán vào
+          Organization thành công.
+        </blockquote>
+
+        <hr />
+        <h2 id="notes">Ghi chú & Troubleshooting</h2>
+        <ul>
+          <li>
+            Nếu không thấy màn hình “Becoming a course creator...”: đảm bảo
+            <code class="inline">FEATURES["ENABLE_CREATOR_GROUP"]</code> = True
+            ở CMS và giáo viên đã đăng nhập đúng.
+          </li>
+          <li>
+            Không nhận được email: kiểm tra cấu hình email backend và giá trị
+            <code class="inline">CREATOR_GROUP_REQUEST_EMAIL</code>.
+          </li>
+          <li>
+            Lỗi CORS/CSRF khi tích hợp ứng dụng ngoài: xác nhận các domain đã
+            thêm vào <code class="inline">CORS_ORIGIN_WHITELIST</code>,
+            <code class="inline">CSRF_TRUSTED_ORIGINS</code>, đồng thời thiết
+            lập <code class="inline">SESSION_COOKIE_DOMAIN</code>/<code
+              class="inline"
+              >CSRF_COOKIE_DOMAIN</code
+            >
+            phù hợp.
+          </li>
+        </ul>
+
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,438 @@
+<!-- Only copy, no edit -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>template web</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+    <link rel="stylesheet" href="../assets/pageCSS/google-tpa.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          <h4>Đang xem: <code class="inline">upload-limit-studio</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <!-- ===== NỘI DUNG TRANG ===== -->
+        <h1 id="top">
+          Bật đăng nhập Google (Third‑Party Auth) cho Open edX với Tutor
+        </h1>
+        <p class="muted">
+          Tài liệu hướng dẫn <strong>end‑to‑end</strong>: bật cờ TPA trong
+          Tutor, tạo OAuth Client (Google), cấu hình
+          <strong>Provider</strong> trong Django Admin, kiểm tra, xử lý lỗi
+          thường gặp và ghi chú bảo mật.
+        </p>
+
+        <hr />
+        <h2 id="goals">Mục tiêu</h2>
+        <ul>
+          <li>Trang đăng nhập có nút <strong>Sign in with Google</strong>.</li>
+          <li>
+            Người dùng có thể <strong>liên kết</strong> tài khoản hiện có hoặc
+            <strong>đăng ký mới</strong> bằng Google.
+          </li>
+        </ul>
+
+        <hr />
+        <h2 id="env">Môi trường giả định</h2>
+        <ul>
+          <li>Tutor chế độ <strong>dev</strong> (Docker đã cài sẵn).</li>
+          <li>
+            LMS dev: <code class="inline">http://local.openedx.io:8000</code>
+          </li>
+          <li>
+            Authn MFE (nếu bật):
+            <code class="inline"
+              >http://apps.local.openedx.io:1999/authn/login</code
+            >
+          </li>
+          <li>Kiểm tra host dev của bạn:</li>
+        </ul>
+        <pre><button class="copy">Copy</button><code>tutor config printvalue LMS_HOST
+tutor config printvalue CMS_HOST</code></pre>
+        <blockquote>
+          Kỳ vọng:
+          <pre><code>local.openedx.io
+studio.local.openedx.io</code></pre>
+        </blockquote>
+
+        <hr />
+        <h2 id="plugins-root">Nơi lưu plugin</h2>
+        <p>Thư mục plugin mặc định:</p>
+        <pre><button class="copy">Copy</button><code>cd $(tutor plugins printroot)</code></pre>
+
+        <hr />
+        <h2 id="arch">Kiến trúc nhanh (nơi phải cấu hình)</h2>
+        <ul>
+          <li>
+            <strong>FEATURES</strong>: cần bật
+            <code class="inline">ENABLE_THIRD_PARTY_AUTH</code> (khuyến nghị
+            <code class="inline">ENABLE_COMBINED_LOGIN_REGISTRATION</code>).
+          </li>
+          <li>
+            <strong>THIRD_PARTY_AUTH_BACKENDS</strong>: thêm
+            <code class="inline">social_core.backends.google.GoogleOAuth2</code
+            >.
+          </li>
+          <li>
+            <strong>AUTHENTICATION_BACKENDS</strong>: cũng cần nạp backend
+            Google.
+          </li>
+          <li>
+            <strong>Secrets</strong>: lưu <em>Client secret</em> trong cấu hình
+            server (không lưu trong Admin).
+          </li>
+          <li>
+            <strong>Provider Configuration</strong> (Django Admin): chứa
+            <em>Client ID</em>, trạng thái <em>Enabled/Visible</em> và gán
+            <strong>Site</strong>.
+          </li>
+          <li>
+            <strong>Sites</strong>: gán provider vào site
+            <code class="inline">local.openedx.io</code> để nút hiển thị.
+          </li>
+        </ul>
+
+        <hr />
+        <h2 id="google-client">
+          Bước 1 — Tạo Google OAuth Client (Web application)
+        </h2>
+        <ol>
+          <li>
+            <strong>Consent screen</strong>:
+            <ul>
+              <li>App name, support email, developer email.</li>
+              <li>
+                Audience: <strong>External</strong> nếu người ngoài tổ chức có
+                thể đăng nhập.
+              </li>
+              <li>
+                Scopes: <code class="inline">openid</code>,
+                <code class="inline">email</code>,
+                <code class="inline">profile</code>.
+              </li>
+              <li>
+                Nếu để <strong>Testing</strong>, thêm email vào
+                <strong>Test users</strong>.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Tạo OAuth Client</strong> (Web application):
+            <ul>
+              <li>
+                <strong>Authorized redirect URIs</strong>:
+                <ul>
+                  <li>
+                    Dev:
+                    <code class="inline"
+                      >http://local.openedx.io:8000/auth/complete/google-oauth2/</code
+                    >
+                  </li>
+                  <li>
+                    Prod:
+                    <code class="inline"
+                      >https://YOUR_LMS_DOMAIN/auth/complete/google-oauth2/</code
+                    >
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <div class="callout">
+          <strong>Ghi lại</strong> <em>Client ID</em> và <em>Client Secret</em>.
+        </div>
+
+        <hr />
+        <h2 id="plugin">
+          Bước 2 — Tạo plugin Tutor: bật cờ, backend & lưu secret an toàn
+        </h2>
+        <h3 id="plugin-file">2.1) Tạo file plugin</h3>
+        <p>
+          <strong>File</strong>:
+          <code class="inline"
+            >$(tutor plugins printroot)/thirdparty-google.yml</code
+          >
+        </p>
+        <pre><button class="copy">Copy</button><code class="yaml">name: thirdparty-google
+version: "1.0.0"
+
+config:
+  defaults:
+    GOOGLE_OAUTH2_KEY: ""
+    GOOGLE_OAUTH2_SECRET: ""
+
+patches:
+
+  openedx-lms-common-settings: |
+    FEATURES["ENABLE_THIRD_PARTY_AUTH"] = True
+    FEATURES["ENABLE_COMBINED_LOGIN_REGISTRATION"] = True
+
+    THIRD_PARTY_AUTH_BACKENDS = list(set((locals().get("THIRD_PARTY_AUTH_BACKENDS") or []) + [
+      "social_core.backends.google.GoogleOAuth2",
+    ]))
+
+    AUTHENTICATION_BACKENDS = tuple(list(AUTHENTICATION_BACKENDS) + [
+      "social_core.backends.google.GoogleOAuth2",
+    ])
+
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "{{ GOOGLE_OAUTH2_KEY }}"
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "{{ GOOGLE_OAUTH2_SECRET }}"
+
+  openedx-cms-common-settings: |
+    THIRD_PARTY_AUTH_BACKENDS = list(set((locals().get("THIRD_PARTY_AUTH_BACKENDS") or []) + [
+      "social_core.backends.google.GoogleOAuth2",
+    ]))
+
+    AUTHENTICATION_BACKENDS = tuple(list(AUTHENTICATION_BACKENDS) + [
+      "social_core.backends.google.GoogleOAuth2",
+    ])
+
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "{{ GOOGLE_OAUTH2_KEY }}"
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "{{ GOOGLE_OAUTH2_SECRET }}"</code></pre>
+
+        <h3 id="set-secrets">2.2) Điền Client ID/Secret</h3>
+        <pre><button class="copy">Copy</button><code># Điền Client ID/Secret lấy từ Google Cloud
+tutor config save --set GOOGLE_OAUTH2_KEY="YOUR_GOOGLE_CLIENT_ID" \
+                  --set GOOGLE_OAUTH2_SECRET="YOUR_GOOGLE_CLIENT_SECRET"</code></pre>
+
+        <h3 id="apply-plugin">2.3) Áp dụng plugin & kiểm tra</h3>
+        <pre><button class="copy">Copy</button><code>tutor plugins enable thirdparty-google
+# Bảo đảm các cờ FEATURES đã bật
+tutor config save --set ENABLE_THIRD_PARTY_AUTH=true --set ENABLE_COMBINED_LOGIN_REGISTRATION=true
+# Khởi động lại dịch vụ
+tutor dev restart lms
+
+# Kiểm tra trong runtime (container)
+tutor dev run lms bash -lc 'python - << "PY"
+from django.conf import settings
+print("THIRD_PARTY_AUTH_BACKENDS =", getattr(settings, "THIRD_PARTY_AUTH_BACKENDS", None))
+print("ENABLE_THIRD_PARTY_AUTH =", settings.FEATURES.get("ENABLE_THIRD_PARTY_AUTH"))
+print("ENABLE_COMBINED_LOGIN_REGISTRATION =", settings.FEATURES.get("ENABLE_COMBINED_LOGIN_REGISTRATION"))
+PY'</code></pre>
+
+        <blockquote>
+          Kỳ vọng:
+          <pre><code>THIRD_PARTY_AUTH_BACKENDS = ['social_core.backends.google.GoogleOAuth2']
+ENABLE_THIRD_PARTY_AUTH = True
+ENABLE_COMBINED_LOGIN_REGISTRATION = True</code></pre>
+        </blockquote>
+
+        <hr />
+        <h2 id="provider">Bước 3 — Tạo Provider trong Django Admin</h2>
+        <p>
+          <strong>LMS →</strong>
+          <code class="inline"
+            >/admin/third_party_auth/oauth2providerconfig/</code
+          >
+          → <strong>Add</strong>
+        </p>
+        <ul>
+          <li>
+            <strong>Backend name</strong>:
+            <code class="inline">google-oauth2</code>
+          </li>
+          <li><strong>Client ID</strong>: dán từ Google Cloud</li>
+          <li><strong>Secret</strong>: dán từ Google Cloud</li>
+          <li><strong>Enabled</strong>: ✓</li>
+          <li><strong>Visible</strong>: ✓</li>
+          <li>
+            <strong>Icon class</strong>:
+            <code class="inline">fa-google</code> (tùy chọn)
+          </li>
+          <li>
+            <strong>Name/Display name</strong>:
+            <code class="inline">Google</code> (tùy chọn)
+          </li>
+          <li>
+            <strong>Slug</strong>:
+            <code class="inline">google-oauth2</code> (nếu có)
+          </li>
+          <li>
+            <strong>Sites</strong>: chọn
+            <code class="inline">local.openedx.io</code>
+          </li>
+        </ul>
+
+        <blockquote>
+          Đến đây là đã hoàn thành cài đặt đăng nhập bên thứ 3 với Google.<br />
+          Có thể về trang login/register để kiểm tra.
+        </blockquote>
+        <hr />
+        <h2 id="policy">Chính sách đăng ký & liên kết tài khoản</h2>
+        <ul>
+          <li>
+            Nếu <strong>đã có tài khoản</strong> → đăng nhập 1 lần để
+            <strong>liên kết</strong> Google.
+          </li>
+          <li>
+            Cho phép đăng ký mới bằng Google:
+            <ul>
+              <li>
+                Trong Provider, bật
+                <strong>Send to registration first</strong> hoặc
+                <strong>Skip registration form</strong>.
+              </li>
+              <li>(Tuỳ) Bật <strong>Associate by email</strong>.</li>
+              <li>Đảm bảo hệ thống cho phép đăng ký công khai:</li>
+            </ul>
+          </li>
+        </ul>
+        <pre><button class="copy">Copy</button><code>tutor dev run lms bash -lc 'python - << "PY"
+from django.conf import settings
+print("ALLOW_PUBLIC_ACCOUNT_CREATION =", getattr(settings, "ALLOW_PUBLIC_ACCOUNT_CREATION", None))
+PY'</code></pre>
+        <p>Nếu là <code class="inline">False</code> → thêm vào plugin:</p>
+        <pre><button class="copy">Copy</button><code class="yaml">patches:
+  openedx-lms-development-settings: |
+    ALLOW_PUBLIC_ACCOUNT_CREATION = True</code></pre>
+
+        <hr />
+        <h2 id="test">Kiểm tra & chạy thử</h2>
+        <ul>
+          <li><strong>Bỏ qua MFE</strong> (test nhanh):</li>
+        </ul>
+        <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/auth/idp_redirect/google-oauth2?next=/dashboard</code></pre>
+        <p>Kết quả đúng: chuyển hướng (302) sang Google (không phải 404).</p>
+        <ul>
+          <li>
+            <strong>MFE</strong> (nếu dùng): bật MFE và kiểm tra nút Google.
+          </li>
+        </ul>
+        <pre><button class="copy">Copy</button><code>tutor plugins enable mfe
+tutor config save
+tutor dev restart lms mfe
+# Mở http://apps.local.openedx.io:1999/authn/login</code></pre>
+        <p><strong>(Tuỳ chọn) CORS/CSRF cho MFE dev</strong>:</p>
+        <pre><button class="copy">Copy</button><code class="yaml">patches:
+  openedx-lms-development-settings: |
+    CORS_ORIGIN_WHITELIST = list(set((CORS_ORIGIN_WHITELIST or []) + [
+      "http://apps.local.openedx.io:1999",
+    ]))
+    CSRF_TRUSTED_ORIGINS = list(set((CSRF_TRUSTED_ORIGINS or []) + [
+      "http://apps.local.openedx.io:1999",
+    ]))</code></pre>
+
+        <hr />
+        <h2 id="troubleshooting">Troubleshooting (lỗi thường gặp)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Triệu chứng</th>
+              <th>Nguyên nhân</th>
+              <th>Cách xử lý</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <strong>404</strong> tại
+                <code class="inline">/auth/idp_redirect/google-oauth2</code>
+              </td>
+              <td>
+                Chưa có Provider, chưa gán <strong>Site</strong>, hoặc backend
+                name/slug sai
+              </td>
+              <td>Tạo/điều chỉnh Provider, gán Site đúng (xem Bước 3)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">redirect_uri_mismatch</code></td>
+              <td>Redirect URI trong Google không khớp từng ký tự</td>
+              <td>
+                Dùng đúng mẫu:
+                <code class="inline"
+                  >http://local.openedx.io:8000/auth/complete/google-oauth2/</code
+                >
+                (đúng dấu <code class="inline">/</code> cuối)
+              </td>
+            </tr>
+            <tr>
+              <td><code class="inline">Invalid Origin</code> khi tạo client</td>
+              <td>
+                Dán Redirect URI vào ô <em>Authorized JavaScript origins</em>
+              </td>
+              <td>
+                Origins chỉ là <code class="inline">scheme://host[:port]</code>;
+                Redirect URI phải đi vào ô <em>Authorized redirect URIs</em>
+              </td>
+            </tr>
+            <tr>
+              <td>Không thấy nút Google</td>
+              <td>
+                Provider chưa <strong>Enabled</strong>/<strong>Visible</strong>,
+                chưa gán <strong>Site</strong>, hoặc MFE chưa bật
+              </td>
+              <td>Sửa Provider, bật MFE (nếu dùng), refresh</td>
+            </tr>
+            <tr>
+              <td>Đăng nhập xong báo “không có tài khoản liên kết”</td>
+              <td>Chưa cho phép đăng ký mới</td>
+              <td>
+                Bật <strong>Send to registration first</strong> hoặc
+                <strong>Skip registration form</strong>; bật
+                <code class="inline">ALLOW_PUBLIC_ACCOUNT_CREATION</code> nếu
+                cần
+              </td>
+            </tr>
+            <tr>
+              <td>401/CORS khi MFE gọi API</td>
+              <td>Origin MFE chưa whitelist</td>
+              <td>Thêm CORS/CSRF như phần trên</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre><button class="copy">Copy</button><code>tutor dev logs -f lms</code></pre>
+
+        <hr />
+        <h2 id="security">Bảo mật & vận hành</h2>
+        <ul>
+          <li><strong>Không commit</strong> secrets vào repo.</li>
+          <li>
+            Khi lộ secret → <strong>Rotate</strong> trong Google Cloud, cập nhật
+            cấu hình và <code class="inline">tutor dev restart lms</code>.
+          </li>
+          <li>
+            Tách <strong>dev/prod</strong>: mỗi môi trường dùng
+            <strong>client khác nhau</strong>.
+          </li>
+          <li>
+            <strong>Client Secret không đặt trong Admin</strong>; chỉ
+            <strong>Client ID</strong> nằm ở Provider.
+          </li>
+        </ul>
+
+        <hr />
+        <h2 id="quick-check">Phụ lục — Lệnh kiểm tra nhanh</h2>
+        <pre><button class="copy">Copy</button><code># In đường dẫn env đã render
+tutor config printroot
+
+# Xem lms.env.yml đã có secrets chưa
+grep -n SOCIAL_AUTH "$(tutor config printroot)/env/apps/openedx/config/lms.env.yml"
+
+# Inspect settings trong container
+tutor dev run lms bash -lc 'python - << "PY"\nfrom django.conf import settings\nprint("THIRD_PARTY_AUTH_BACKENDS =", getattr(settings, "THIRD_PARTY_AUTH_BACKENDS", None))\nprint("FEATURES =", settings.FEATURES)\nPY'
+
+# Liệt kê Sites & Provider google-oauth2 trong DB
+tutor dev run lms bash -lc 'python - << "PY"\nfrom django.contrib.sites.models import Site\nfrom third_party_auth.models import OAuth2ProviderConfig\nprint([ (s.id, s.domain) for s in Site.objects.all() ])\nqs = OAuth2ProviderConfig.objects.filter(backend_name="google-oauth2")\nprint("providers:", qs.count(), [ (p.id, p.enabled, [s.domain for s in p.sites.all()]) for p in qs ])\nPY'</code></pre>
+
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>
