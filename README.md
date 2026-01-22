@@ -42,3 +42,18 @@ cd HTDOCS
 ```bash
    http://localhost:8000
 ```
+
+## Hosting to the Internet (Free Hosting)
+
+This project can be deployed using InfinityFree for educational and documentation purposes.
+Deployment Steps
+
+1. Visit: https://dash.infinityfree.com/
+2. Create account.
+3. Choose hosting plan: INFINITY FREE.
+4. Create a free subdomain.
+5. Open File Manager.
+6. Navigate to the htdocs directory.
+7. Upload all project source files (HTML, CSS, JS, PHP, JSON).
+8. Extract files if uploaded as a ZIP archive.
+9. Open the domain in your browser to verify deployment.
