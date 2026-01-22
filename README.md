@@ -28,7 +28,7 @@ Data and content are managed using:
 2. Navigate to the web root:
 
 ```bash
-cd HTDOCS
+cd cusc-edtech-installation-guide
 ```
 
 3. Start the PHP built-in server:
