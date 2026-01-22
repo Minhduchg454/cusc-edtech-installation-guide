@@ -11,10 +11,16 @@
   <body>
     <div class="wrap">
       <div class="sidebar">
-        <aside id="global-toc-mount"></aside>
+          <aside id="global-toc-mount"></aside>
         <aside>
-          <button id="themeToggle" class="toggle">🌙 Dark mode</button>
-          <h4>Đang xem: <code class="inline">upload-limit-studio</code></h4>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <a href="../index.html" class="toggle home-btn">🏠 Trang chủ</a>
+            <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          </div>
+          <h4>
+            Đang xem:
+            <code class="inline" id="current-page">—</code>
+          </h4>
           <ul class="toc" id="toc"></ul>
         </aside>
       </div>

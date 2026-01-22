@@ -120,9 +120,14 @@ body {
   padding: 6px 10px;
   border-radius: 10px;
   cursor: pointer;
+  text-decoration: none;
 }
 .toggle:hover {
   border-color: var(--accent);
+}
+
+.home-btn {
+  font-size: small;
 }
 
 .content {

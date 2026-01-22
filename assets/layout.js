@@ -18,6 +18,7 @@ function initGlobalTOC() {
     const ul = aside.querySelector("ul.toc");
 
     (data.items || []).forEach((it) => {
+      const currentLabel = document.getElementById("current-page");
       const li = document.createElement("li");
       const a = document.createElement("a");
 
@@ -32,7 +33,12 @@ function initGlobalTOC() {
           .split("/")
           .pop()
           .toLowerCase();
-        if (itemFile === currentFile) a.classList.add("active");
+        if (itemFile === currentFile) {
+          a.classList.add("active");
+          if (currentLabel) {
+            currentLabel.textContent = it.text;
+          }
+        }
       } catch (e) {}
 
       if (it.target) a.setAttribute("target", it.target);
