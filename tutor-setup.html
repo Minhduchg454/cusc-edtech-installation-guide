@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dev Setup — Cài đặt Tutor Open edX từ đầu (ít lỗi nhất, kèm kỳ vọng hiển thị)</title>
+  <style>
+    :root{
+      --bg:#f8fafc; --panel:#ffffff; --muted:#4b5563; --text:#0b1220; --accent:#2563eb;
+      --border:#e5e7eb; --code-bg:#f3f4f6; --code-border:#e5e7eb; --table-row:#fafafa;
+      --thead-bg:rgba(0,0,0,0.04); --callout-bg:rgba(0,0,0,0.03); --input-bg:#ffffff;
+      --green:#059669; --orange:#d97706; --red:#dc2626;
+    }
+    [data-theme="dark"]{
+      --bg:#0b0c0f; --panel:#111217; --muted:#9aa3b2; --text:#e8ecf1; --accent:#7aa2f7;
+      --border:#222633; --code-bg:#0f1116; --code-border:#2a3241; --table-row:#0f1218;
+      --thead-bg:rgba(255,255,255,0.04); --callout-bg:rgba(255,255,255,0.02); --input-bg:#0d0f14;
+      --green:#67e8a4; --orange:#f7c06a; --red:#f7768e;
+    }
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans",Helvetica,Arial}
+    .wrap{display:grid;grid-template-columns: 280px 1fr;gap:24px;max-width:1200px;margin:0 auto;padding:24px}
+    @media (max-width:980px){.wrap{grid-template-columns:1fr;padding:16px}}
+
+    .sidebar{position:sticky;top:16px;height:fit-content;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
+    .sidebar h1{font-size:18px;margin:0 0 8px 0}
+    .sidebar .muted{color:var(--muted);font-size:13px;margin-bottom:12px}
+    .toc{list-style:none;margin:0;padding:0;max-height:60vh;overflow:auto}
+    .toc li{margin:6px 0}
+    .toc a{color:var(--text);text-decoration:none;border-left:3px solid transparent;padding-left:8px;display:block}
+    .toc a:hover{color:var(--accent)}
+    .toc .lvl2{padding-left:10px;font-size:14px}
+
+    .toggle{display:inline-flex;align-items:center;gap:6px;margin:6px 0 10px;background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:10px;cursor:pointer}
+    .toggle:hover{border-color:var(--accent)}
+
+    .content{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px}
+    .content h1,.content h2,.content h3,.content h4{scroll-margin-top:18px}
+    .content h1{font-size:28px;margin:0 0 12px}
+    .content h2{font-size:22px;margin:28px 0 8px;border-bottom:1px solid var(--border);padding-bottom:6px}
+    .content h3{font-size:18px;margin:20px 0 6px}
+    .content h4{font-size:16px;margin:16px 0 6px}
+    .content p{margin:8px 0}
+    .muted{color:var(--muted)}
+
+    .pill{display:inline-block;font-size:12px;padding:2px 8px;border:1px solid var(--border);border-radius:999px;background:rgba(37,99,235,0.08)}
+    .badge{display:inline-block;font-size:12px;padding:2px 6px;border-radius:6px;border:1px solid var(--border);background:rgba(0,0,0,0.03)}
+
+    table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+    thead th{background:var(--thead-bg);font-weight:600}
+    tbody tr:nth-child(odd){background:var(--table-row)}
+    code.inline{background:var(--code-bg);border:1px solid var(--code-border);padding:1px 6px;border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.95em}
+
+    pre{position:relative;background:var(--code-bg);border:1px solid var(--code-border);padding:14px;border-radius:10px;overflow:auto}
+    pre code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+    .copy{position:absolute;right:10px;top:10px;background:transparent;border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:8px;cursor:pointer}
+    .copy:hover{border-color:var(--accent)}
+
+    .search{display:flex;gap:8px;margin:10px 0 16px}
+    .search input{flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px}
+    .search .hint{font-size:12px;color:var(--muted)}
+
+    .callout{border:1px dashed var(--border);padding:12px;border-radius:10px;background:var(--callout-bg)}
+    blockquote{border-left:4px solid var(--accent);margin:1em 0;padding:0.5em 1em;background:var(--callout-bg)}
+    .ok{color:var(--green)}
+    .warn{color:var(--orange)}
+    .err{color:var(--red)}
+    a{color:var(--accent)}
+    hr{border:0;border-top:1px solid var(--border);margin:28px 0}
+
+    .wrap { align-items: start; }
+    .sidebar, .content { min-width: 0; }
+    table, pre { display: block; max-width: 100%; overflow-x: auto; box-sizing: border-box; }
+    img { max-width: 100%; height: auto; display: block; }
+    .active {color:var(--accent) !important;font-weight:bold}
+    .remove {text-decoration: line-through !important;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="sidebar">
+      <aside id="global-toc-mount"></aside>
+      <script src="toc.js" defer></script>
+      <aside>
+        <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+        <h4>Đang xem: <code class="inline">tutor-setup</code></h4>
+        <ul class="toc" id="toc"></ul>
+      </aside>
+      <br>
+    </div>
+
+    <main class="content markdown-body">
+      <h1 id="top">Dev Setup — Cài đặt Tutor Open edX từ đầu</h1>
+      <p class="muted">Lộ trình <strong>ít lỗi nhất</strong> cho Ubuntu (WSL2 tương tự): dùng <strong>virtualenv</strong>, kiểm tra <strong>Docker</strong>, cấu hình <strong>hosts</strong>, <strong>launch</strong> Local, chạy <strong>migrations</strong>, tạo <strong>admin</strong>, bật <strong>Dev</strong> (build <code class="inline">openedx-dev</code>) & chèn <strong>kỳ vọng hiển thị</strong> sau mỗi bước.</p>
+
+      <hr />
+      <h2 id="prereq">1) Yêu cầu hệ thống</h2>
+      <pre><button class="copy">Copy</button><code>docker --version
+docker compose version
+python3 --version
+sudo apt update && sudo apt install -y python3-venv python3-pip</code></pre>
+      <blockquote>Kỳ vọng hiển thị:
+<pre><code>Docker version 2x.x.x, build ...
+Docker Compose version v2.x.x
+Python 3.11.x
+...</code></pre>
+      </blockquote>
+      <div class="callout"><strong>Lưu ý:</strong> Nếu từng bị <code class="inline">getcwd() failed</code>, hãy <code class="inline">cd ~</code> trước khi cài đặt.</div>
+
+      <h2 id="venv">2) Tạo virtualenv & cài Tutor (ổn định nhất)</h2>
+      <pre><button class="copy">Copy</button><code># Tạo venv riêng cho Tutor
+python3 -m venv ~/.venvs/tutor-20
+~/.venvs/tutor-20/bin/pip install -U pip
+
+# Cài đúng bản Indigo 20.0.1
+~/.venvs/tutor-20/bin/pip install "tutor[full]==20.0.1"
+
+# Tiện alias (zsh/bash)
+echo 'alias tutor="$HOME/.venvs/tutor-20/bin/tutor"' >> ~/.zshrc 2>/dev/null || true
+echo 'alias tutor="$HOME/.venvs/tutor-20/bin/tutor"' >> ~/.bashrc 2>/dev/null || true
+source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null || true
+
+# Kiểm tra
+tutor --version</code></pre>
+      <blockquote>Kỳ vọng hiển thị:
+<pre><code>20.0.1
+</code></pre>
+      </blockquote>
+
+      <h2 id="config">3) Cấu hình nền tảng & map hosts</h2>
+      <pre><button class="copy">Copy</button><code>tutor config save \
+  --set OPENEDX_LMS_BASE=local.openedx.io \
+  --set OPENEDX_CMS_BASE=studio.local.openedx.io \
+  --set PLATFORM_NAME="My Open edX" \
+  --set CONTACT_EMAIL="admin@local.openedx.io"
+
+# Map hosts nếu chưa có
+grep -q local.openedx.io /etc/hosts || \
+  echo -e "127.0.0.1 local.openedx.io\n127.0.0.1 studio.local.openedx.io" | sudo tee -a /etc/hosts</code></pre>
+      <blockquote>Kỳ vọng hiển thị:
+<pre><code>Configuration saved to /home/&lt;user&gt;/.local/share/tutor/config.yml
+Environment generated in /home/&lt;user&gt;/.local/share/tutor/env
+127.0.0.1 local.openedx.io
+127.0.0.1 studio.local.openedx.io
+</code></pre>
+      </blockquote>
+
+      <h2 id="launch">4) Khởi tạo Local & chạy nền</h2>
+      <pre><button class="copy">Copy</button><code># Launch (tạo env, kéo images, init DB)
+tutor local launch
+
+# Chạy nền & kiểm tra
+tutor local start -d
+tutor local status
+tutor local logs --tail=120 lms
+tutor local logs --tail=120 cms</code></pre>
+      <blockquote>Kỳ vọng hiển thị:
+<pre><code>The platform is now running and can be accessed at:
+  http://local.openedx.io
+  http://studio.local.openedx.io
+  http://meilisearch.local.openedx.io
+  http://apps.local.openedx.io
+</code></pre>
+      </blockquote>
+
+      <h2 id="migrate">5) Chạy migrations (khi thiếu bảng)</h2>
+      <p>Nếu gặp lỗi như <code class="inline">ProgrammingError: (1146, "Table 'openedx.waffle_switch' doesn't exist")</code>, chạy:</p>
+      <pre><button class="copy">Copy</button><code>tutor local run lms ./manage.py lms migrate --noinput
+tutor local run cms ./manage.py cms migrate --noinput
+
+# Xem migrations đã apply
+tutor local run lms ./manage.py lms showmigrations | tail -n 60
+tutor local run cms ./manage.py cms showmigrations | tail -n 60</code></pre>
+      <blockquote>Kỳ vọng hiển thị:
+<pre><code>waffle
+ [X] 0001_initial
+ [X] 0002_auto_20161201_0958
+...
+</code></pre>
+      </blockquote>
+
+      <h2 id="admin">6) Tạo tài khoản admin & đặt mật khẩu</h2>
+      <pre><button class="copy">Copy</button><code># Tạo superuser
+tutor local do createuser --staff --superuser admin admin@local.openedx.io
+
+# Đặt mật khẩu
+tutor local run lms ./manage.py lms shell -c "
+from django.contrib.auth import get_user_model
+u=get_user_model().objects.get(username='admin')
+u.set_password('123'); u.save(); print('OK')
+"</code></pre>
+      <blockquote>Kỳ vọng hiển thị:
+<pre><code>OK
+</code></pre>
+      </blockquote>
+
+      <h2 id="urls">7) Truy cập thử</h2>
+      <ul>
+        <li>LMS: <code class="inline">http://local.openedx.io</code></li>
+        <li>Studio: <code class="inline">http://studio.local.openedx.io</code></li>
+      </ul>
+
+      <hr />
+      <h2 id="dev">8) Bật môi trường Dev (tutor <code class="inline">dev</code>)</h2>
+      <p>Dev dùng image <code class="inline">openedx-dev</code> build tại chỗ. Nếu xóa image trước đó, cần build lại.</p>
+      <pre><button class="copy">Copy</button><code># Build image dev
+tutor images build openedx-dev
+
+# (tuỳ chọn) kiểm tra image dev
+tutor config printvalue DOCKER_IMAGE_OPENEDX_DEV
+docker image ls | grep openedx-dev
+
+# Start dev
+tutor dev start</code></pre>
+      <blockquote>Kỳ vọng hiển thị:
+<pre><code>[+] Running ...
+ ✔ lms, cms, watchthemes ... Started
+</code></pre>
+      </blockquote>
+      <div class="callout">
+        <strong>Lỗi phổ biến:</strong> <code class="inline">pull access denied for openedx-dev</code> ⇒ Chưa build image dev. Chạy <code class="inline">tutor images build openedx-dev</code> rồi <code class="inline">tutor dev start</code>.
+      </div>
+
+      <h3>8.1) Migrations, superuser & logs trong Dev</h3>
+      <pre><button class="copy">Copy</button><code># Migrate trong dev
+tutor dev run lms ./manage.py lms migrate --noinput
+tutor dev run cms ./manage.py cms migrate --noinput
+
+# Tạo/đổi mật khẩu admin trong dev
+tutor dev run lms ./manage.py lms createsuperuser
+tutor dev run lms ./manage.py lms changepassword admin
+
+# Logs
+tutor dev logs --tail=200 lms
+tutor dev logs --tail=200 cms</code></pre>
+
+      <hr />
+      <h2 id="fixdb">9) (Tuỳ chọn) Sửa lỗi MySQL “Access denied” nhanh</h2>
+      <p>Nếu user <code class="inline">openedx</code> trong MySQL lệch mật khẩu với cấu hình Tutor:</p>
+      <pre><button class="copy">Copy</button><code>OPENEDX_MYSQL_PASSWORD=$(tutor config printvalue OPENEDX_MYSQL_PASSWORD)
+MYSQL_ROOT_PASSWORD=$(tutor config printvalue MYSQL_ROOT_PASSWORD)
+OPENEDX_DB=$(tutor config printvalue OPENEDX_MYSQL_DATABASE 2>/dev/null || echo openedx)
+
+read -r -d '' SQL <<'EOF'
+CREATE DATABASE IF NOT EXISTS `%OPENEDX_DB%` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'openedx'@'%' IDENTIFIED BY '%OPENEDX_MYSQL_PASSWORD%';
+ALTER USER 'openedx'@'%' IDENTIFIED BY '%OPENEDX_MYSQL_PASSWORD%';
+GRANT ALL PRIVILEGES ON `%OPENEDX_DB%`.* TO 'openedx'@'%';
+FLUSH PRIVILEGES;
+SELECT user,host,plugin FROM mysql.user WHERE user='openedx';
+EOF
+SQL=${SQL//%OPENEDX_DB%/$OPENEDX_DB}
+SQL=${SQL//%OPENEDX_MYSQL_PASSWORD%/$OPENEDX_MYSQL_PASSWORD}
+echo "$SQL" | tutor local exec -T mysql sh -lc 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -h127.0.0.1'</code></pre>
+      <blockquote>Kỳ vọng hiển thị:
+<pre><code>user    host    plugin
+openedx %       caching_sha2_password
+</code></pre>
+      </blockquote>
+
+      <hr />
+      <h2 id="cleanup">10) (Phụ lục) Xóa sạch để làm lại từ đầu</h2>
+      <pre><button class="copy">Copy</button><code>tutor dev stop || true
+tutor local stop || true
+
+# Down & xoá volumes
+docker compose -f ~/.local/share/tutor/env/local/docker-compose.yml \
+  -f ~/.local/share/tutor/env/local/docker-compose.prod.yml \
+  -f ~/.local/share/tutor/env/local/docker-compose.jobs.yml \
+  --project-name tutor_local down -v --remove-orphans || true
+
+docker compose -f ~/.local/share/tutor/env/local/docker-compose.yml \
+  -f ~/.local/share/tutor/env/dev/docker-compose.yml \
+  --project-name tutor_dev down -v --remove-orphans || true
+
+# Xoá data/env/build
+sudo chown -R "$USER":"$USER" ~/.local/share/tutor || true
+chmod -R u+rwX ~/.local/share/tutor || true
+rm -rf ~/.local/share/tutor/data ~/.local/share/tutor/env ~/.local/share/tutor/build
+rm -f  ~/.local/share/tutor/config.yml
+
+# Xoá images chính (tuỳ chọn)
+docker image ls | awk '/overhangio\\/openedx|openedx-dev|overhangio\\/openedx-mfe|mysql|mongo|redis|caddy/ {print $3}' | xargs -r docker rmi -f
+
+docker system prune -f</code></pre>
+
+      <hr />
+      <h2 id="troubleshoot">11) Troubleshooting nhanh</h2>
+      <table>
+        <thead><tr><th>Triệu chứng</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code class="inline">Access denied for user 'openedx'</code></td>
+            <td>Lệch mật khẩu MySQL</td>
+            <td>Xem mục <a href="#fixdb">9</a>, sau đó <code class="inline">tutor local restart lms cms</code></td>
+          </tr>
+          <tr>
+            <td>Thiếu bảng (vd. <code class="inline">waffle_switch</code>)</td>
+            <td>Migrations chưa chạy</td>
+            <td>Chạy mục <a href="#migrate">5</a></td>
+          </tr>
+          <tr>
+            <td><code class="inline">pull access denied for openedx-dev</code></td>
+            <td>Chưa build image dev</td>
+            <td><code class="inline">tutor images build openedx-dev</code> rồi <code class="inline">tutor dev start</code></td>
+          </tr>
+          <tr>
+            <td>Port 80/443 bận</td>
+            <td>Đang có nginx/apache khác</td>
+            <td>Đổi cổng Caddy: <code class="inline">tutor config save --set CADDY_HTTP_PORT=8000 --set CADDY_HTTPS_PORT=8443 && tutor local restart caddy</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:24px"><a href="#top">▲ Lên đầu trang</a></p>
+    </main>
+  </div>
+
+  <script>
+    // Theme toggle
+    const STORAGE_KEY='theme';
+    const docEl=document.documentElement;
+    const btn=document.getElementById('themeToggle');
+    function applyTheme(t){ if(t!=='light'&&t!=='dark') t='light';
+      docEl.setAttribute('data-theme',t);
+      localStorage.setItem(STORAGE_KEY,t);
+      if(btn) btn.textContent=t==='dark'?'🌞 Light mode':'🌙 Dark mode';
+    }
+    applyTheme(localStorage.getItem(STORAGE_KEY)||'light');
+    if(btn){ btn.addEventListener('click',()=>{applyTheme((docEl.getAttribute('data-theme')||'light')==='dark'?'light':'dark')})}
+
+    // Build TOC from h2
+    const toc=document.getElementById('toc');
+    document.querySelectorAll('.content h2').forEach(h=>{
+      const id=h.id||h.textContent.toLowerCase().replace(/\s+/g,'-');
+      h.id=id;
+      const li=document.createElement('li');
+      const a=document.createElement('a');
+      a.href='#'+id;
+      a.textContent=h.textContent.replace(/—.*/,'').trim();
+      a.className='lvl2';
+      li.appendChild(a);
+      toc.appendChild(li);
+    });
+
+    // Copy buttons
+    document.querySelectorAll('pre .copy').forEach(b=>{
+      b.addEventListener('click',()=>{
+        const code=b.nextElementSibling.innerText;
+        navigator.clipboard.writeText(code).then(()=>{
+          b.textContent='Đã copy';
+          setTimeout(()=>b.textContent='Copy',1200);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

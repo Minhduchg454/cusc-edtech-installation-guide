@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tổng hợp tài liệu — Open edX (Tutor)</title>
+  <style>
+    :root{
+      /* Light */
+      --bg:#f8fafc; --panel:#ffffff; --muted:#4b5563; --text:#0b1220; --accent:#2563eb;
+      --border:#e5e7eb; --code-bg:#f3f4f6; --code-border:#e5e7eb;
+      --card-hover:rgba(37,99,235,0.07);
+    }
+    [data-theme="dark"]{
+      /* Dark */
+      --bg:#0b0c0f; --panel:#111217; --muted:#9aa3b2; --text:#e8ecf1; --accent:#7aa2f7;
+      --border:#222633; --code-bg:#0f1116; --code-border:#2a3241;
+      --card-hover:rgba(122,162,247,0.12);
+    }
+
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans",Helvetica,Arial}
+
+    /* Page */
+    .wrap{max-width:1100px;margin:0 auto;padding:32px 20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .title{display:flex;align-items:center;gap:10px}
+    .title h1{font-size:24px;margin:0}
+    .muted{color:var(--muted)}
+
+    .toggle{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:12px;cursor:pointer}
+    .toggle:hover{border-color:var(--accent)}
+
+    /* Search */
+    .search{display:flex;gap:8px;margin:12px 0 24px}
+    .search input{flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:12px}
+
+    /* Grid of docs */
+    .grid{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:16px}
+    @media (max-width:980px){.grid{grid-template-columns:repeat(2, minmax(0,1fr))}}
+    @media (max-width:640px){.grid{grid-template-columns:1fr}}
+
+    .card{display:block;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;text-decoration:none;color:var(--text);transition:transform .08s ease, box-shadow .08s ease, border-color .1s ease}
+    .card:hover{box-shadow:0 6px 20px rgba(0,0,0,.08);border-color:var(--accent);background:linear-gradient(0deg, var(--panel), var(--panel))}
+    .card:focus-visible{outline:2px solid var(--accent)}
+    .card small{display:inline-block;font-size:12px;border:1px solid var(--border);border-radius:999px;padding:2px 8px;margin-bottom:8px;background:var(--card-hover)}
+    .card h3{font-size:18px;margin:4px 0 6px}
+    .card p{margin:0;color:var(--muted);font-size:14px}
+
+    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+      
+      input {outline:none;}
+      textarea {outline:none;}
+  </style>
+  <style>
+    :root { --ink:#0f172a; --muted:#6b7280; --line:#e5e7eb; --card:#fff; --bg:#fafafa; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); }
+    header { padding:24px 16px; max-width:1100px; margin:auto; }
+    header h1 { margin:0 0 8px; font-size:28px; }
+    header p { margin:0; color:var(--muted); }
+    .wrap { max-width:1100px; margin:0 auto; padding:0 16px 40px; }
+    .toolbar { display:flex; gap:12px; align-items:center; margin:16px 0 20px; flex-wrap:wrap; }
+    .search { flex:1 1 280px; min-width:240px; }
+    .search input { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:15px; }
+    .tags { display:flex; gap:8px; flex-wrap:wrap; }
+    .tag { padding:6px 10px; border:1px solid var(--line); border-radius:999px; font-size:12px; cursor:pointer; background:#fff; }
+    .tag.active { border-color:#111827; }
+    .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
+    @media (max-width: 980px) { .grid { grid-template-columns: repeat(2, 1fr);} }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+    .card { display:block; border:1px solid var(--line); border-radius:16px; background:var(--card);
+            padding:16px; text-decoration:none; color:inherit; transition:transform .12s ease, box-shadow .12s ease; }
+    .card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.06); }
+    .card h3 { margin:0 0 6px; font-size:18px; line-height:1.25; }
+    .card p.desc { margin:6px 0 12px; color:var(--muted); font-size:14px; }
+    .badges { display:flex; gap:6px; flex-wrap:wrap; }
+    .badge { font-size:12px; padding:4px 8px; border-radius:999px; background:#f3f4f6; border:1px solid var(--line); }
+    .empty, .error { padding:24px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h7l5 5v11.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19.5Z"/><path d="M13 3v4a2 2 0 0 0 2 2h4"/></svg>
+        <div>
+          <h1>Tổng hợp tài liệu</h1>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+        <div class="toolbar">
+          <div class="search"><input id="q" placeholder="Tìm theo tiêu đề, mô tả hoặc thẻ..." autocomplete="off"></div>
+          <div class="tags" id="tags"></div>
+        </div>
+
+        <div id="cards" class="grid" aria-live="polite"></div>
+        <div id="status" class="empty"></div>
+  	</div>
+      
+    <br/>
+	<hr>
+    <section id="comments" style="margin-top:28px">
+      <h2 style="font-size:20px;margin:0 0 10px">Bình luận</h2>
+      <p class="muted" style="margin:0 0 14px">Thêm comment báo lỗi, yêu cầu ở đây, chỉ nhập tên là comment được.</p>
+
+      <!-- Controls -->
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:grid;grid-template-columns:1fr;gap:10px">
+          <div id="identityRow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <label class="muted">Tên của bạn:</label>
+            <input id="authorName" placeholder="Nhập tên..." style="flex:1;min-width:220px;border:1px solid var(--border);background:transparent;color:var(--text);padding:8px 10px;border-radius:10px" />
+            <button class="toggle" id="saveName">Lưu tên</button>
+            <button class="toggle" id="removeName">Xóa tên</button>
+            <span class="muted" id="nameStatus"></span>
+          </div>
+          <div id="adminRow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <label class="muted">Secret key (quản trị):</label>
+            <input id="secretKey" type="password" placeholder="Nhập key..." style="flex:1;min-width:220px;border:1px solid var(--border);background:transparent;color:var(--text);padding:8px 10px;border-radius:10px" />
+            <button class="toggle" id="saveKey">Lưu key</button>
+            <button class="toggle" id="removeKey">Xóa key</button>
+            <span class="muted" id="keyStatus"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Composer -->
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+          <div>
+            <label class="muted">Tag</label>
+            <select id="cTag" style="width:100%;border:1px solid var(--border);background:transparent;color:var(--text);padding:8px 10px;border-radius:10px">
+              <option>bug</option>
+              <option>fix doc</option>
+              <option>request new doc</option>
+              <option>basic</option>
+            </select>
+          </div>
+          <div>
+            <label class="muted">Tài liệu (tùy chọn)</label>
+            <select id="cDoc" style="width:100%;border:1px solid var(--border);background:transparent;color:var(--text);padding:8px 10px;border-radius:10px">
+              <option value="">(Không chọn)</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:10px; display:flex;flex-direction:column">
+          <label class="muted">Nội dung</label>
+          <textarea id="cContent" rows="10" placeholder="Viết góp ý... (có thể dán code)" style="flex-grow:1;border:1px solid var(--border);background:transparent;color:var(--text);padding:10px;border-radius:12px"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+          <button class="toggle" id="submitComment">Gửi bình luận</button>
+        </div>
+      </div>
+
+      <!-- List -->
+      <div id="commentList" class="grid" style="grid-template-columns:1fr"></div>
+    </section>
+
+    <footer></footer>
+  </div>
+
+  <script>
+    // Theme toggle (persist)
+    const STORAGE_KEY='theme';
+    const docEl=document.documentElement; const btn=document.getElementById('themeToggle');
+    function apply(theme){ if(theme!=='light'&&theme!=='dark') theme='light'; docEl.setAttribute('data-theme',theme); localStorage.setItem(STORAGE_KEY,theme); btn.textContent=theme==='dark'? '🌞 Light mode' : '🌙 Dark mode'; }
+    apply(localStorage.getItem(STORAGE_KEY)||'light');
+    btn.addEventListener('click',()=>{apply((docEl.getAttribute('data-theme')||'light')==='dark'?'light':'dark')});
+
+    // Client-side search filter
+    const q=document.getElementById('q'); const grid=document.getElementById('grid');
+    q.addEventListener('input',()=>{
+      const s=q.value.trim().toLowerCase();
+      grid.querySelectorAll('.card').forEach(card=>{
+        const text=(card.innerText+" "+(card.getAttribute('data-tags')||'')).toLowerCase();
+        card.style.display = text.includes(s) ? '' : 'none';
+      });
+    });
+  // ========= Comment system =========
+    const S = {
+      api: 'comments.php', // cùng thư mục
+      lsName: 'doc_userName',
+      lsKey: 'doc_secretKey',
+      lsTokens: 'doc_editTokens' // { id: token }
+    };
+
+    // Populate document options from cards
+    const docSel = document.getElementById('cDoc');
+    Array.from(document.querySelectorAll('.grid .card')).forEach(card=>{
+      const href = card.getAttribute('href');
+      if(!href) return;
+      const opt = document.createElement('option');
+      opt.value = href; opt.textContent = href;
+      docSel.appendChild(opt);
+    });
+
+    // Name & Key handling
+    const nameInput = document.getElementById('authorName');
+    const saveNameBtn = document.getElementById('saveName');
+    const removeNameBtn = document.getElementById('removeName');
+    const nameStatus = document.getElementById('nameStatus');
+
+    const keyInput = document.getElementById('secretKey');
+    const saveKeyBtn = document.getElementById('saveKey');
+    const removeKeyBtn = document.getElementById('removeKey');
+    const keyStatus = document.getElementById('keyStatus');
+
+    const tokens = JSON.parse(localStorage.getItem(S.lsTokens)||'{}');
+
+    function setName(v){ localStorage.setItem(S.lsName, v||''); nameInput.value=v||''; nameStatus.textContent = v? `Đã lưu tên: ${v}` : 'Chưa có tên.';}
+    function setKey(v){ localStorage.setItem(S.lsKey, v||''); keyInput.value=v||''; keyStatus.textContent = v? 'Key đã lưu.' : 'Chưa có key.';}
+
+    setName(localStorage.getItem(S.lsName)||'');
+    setKey(localStorage.getItem(S.lsKey)||'');
+
+    saveNameBtn.onclick = ()=> setName(nameInput.value.trim());
+    removeNameBtn.onclick = ()=> setName('');
+    saveKeyBtn.onclick = ()=> { setKey(keyInput.value.trim()); maybeRefreshAdminProfile(); };
+    removeKeyBtn.onclick = ()=> { setKey(''); ADMIN = null; renderList(); };
+
+    // Load snapshot via JS (GET)
+    let COMMENTS = [];
+    let ADMIN = null; // { isAdmin:true, name }
+
+    function loadSnapshot(){
+      return new Promise((resolve)=>{
+        const s = document.createElement('script');
+        const stamp = Date.now();
+        s.src = `${S.api}?mode=js&_=${stamp}`;
+        s.onload = ()=>{
+          COMMENTS = (window.COMMENTS_SNAPSHOT||[]);
+          ADMIN = null;
+          if(window.ADMIN_PROFILE) ADMIN = window.ADMIN_PROFILE; // provided when secret key valid
+          renderList();
+          resolve();
+        };
+        document.body.appendChild(s);
+      });
+    }
+
+    function fmtTime(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
+
+    function badge(text, tone='default'){
+      const colors = { bug:'#ef4444', fix:'#10b981', req:'#f59e0b', basic:'#6b7280', pending:'#60a5fa', done:'#22c55e' };
+      const bg = (tone==='pending')?colors.pending:(tone==='done')?colors.done:null;
+      return `<span style="display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);${bg?`background:${bg}20;`:''}">${text}</span>`;
+    }
+
+    function renderOne(c){
+      const isOwner = !!tokens[c.id];
+      const canAdmin = !!ADMIN?.isAdmin;
+      const canEdit = canAdmin || isOwner;
+      const tagTone = c.tag==='bug'?'bug':(c.tag==='fix doc'?'fix':(c.tag==='request new doc'?'req':'basic'));
+      return `
+      <div class="card" data-id="${c.id}">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap">
+          <div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <strong>${c.author_name||'Ẩn danh'}</strong>
+              ${badge(c.tag, tagTone)}
+              ${badge(c.status||'pending', (c.status==='done'?'done':'pending'))}
+              ${c.document? `<a class="muted" href="${c.document}">${c.document}</a>`:''}
+            </div>
+            <div class="muted" style="font-size:12px">${fmtTime(c.created_at)}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            ${canEdit? `<button class="toggle btn-edit">Sửa</button><button class="toggle btn-del">Xóa</button>`:''}
+            ${canAdmin? `<select class="toggle btn-status"><option value="pending" ${c.status!=='done'?'selected':''}>Đang chờ</option><option value="done" ${c.status==='done'?'selected':''}>Đã sửa</option></select>`:''}
+          </div>
+        </div>
+        <div style="margin-top:8px;white-space:pre-wrap;background:var(--code-bg);border:1px solid var(--code-border);border-radius:12px;padding:10px">${escapeHTML(c.content)}</div>
+      </div>`
+    }
+
+    function renderList(){
+      const list = document.getElementById('commentList');
+      if(!COMMENTS.length){ list.innerHTML = '<div class="muted">Chưa có bình luận nào.</div>'; return; }
+      list.innerHTML = COMMENTS.sort((a,b)=> new Date(b.created_at)-new Date(a.created_at)).map(renderOne).join('');
+      // wire events
+      list.querySelectorAll('.card').forEach(card=>{
+        const id = card.getAttribute('data-id');
+        const c = COMMENTS.find(x=>x.id===id);
+        const btnE = card.querySelector('.btn-edit');
+        const btnD = card.querySelector('.btn-del');
+        const selS = card.querySelector('.btn-status');
+        if(btnE) btnE.onclick = ()=> editComment(c);
+        if(btnD) btnD.onclick = ()=> delComment(c);
+        if(selS) selS.onchange = (e)=> setStatus(c, e.target.value);
+      });
+
+      // hide/show name row when admin key present
+      document.getElementById('identityRow').style.display = ADMIN?.isAdmin? 'none':'flex';
+    }
+
+    function escapeHTML(s){ return (s||'').replace(/[&<>\"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+
+    // Submit
+    document.getElementById('submitComment').onclick = async ()=>{
+      const key = localStorage.getItem(S.lsKey)||'';
+      let name = localStorage.getItem(S.lsName)||'';
+      if(!key && !name){ alert('Hãy nhập tên của bạn hoặc secret key quản trị.'); return; }
+      const payload = {
+        action:'add',
+        secret_key:key,
+        author_name:key?undefined:name,
+        tag: document.getElementById('cTag').value,
+        document: document.getElementById('cDoc').value || undefined,
+        content: document.getElementById('cContent').value
+      };
+      const res = await apiPost(payload);
+      if(res?.ok){
+        COMMENTS.unshift(res.comment);
+        if(res.editToken){ tokens[res.comment.id]=res.editToken; localStorage.setItem(S.lsTokens, JSON.stringify(tokens)); }
+        document.getElementById('cContent').value='';
+        renderList();
+      }else{
+        alert(res?.error||'Gửi thất bại');
+      }
+    };
+
+    async function editComment(c){
+      const content = prompt('Sửa nội dung:', c.content);
+      if(content==null) return;
+      const res = await apiPost({ action:'update', id:c.id, content, secret_key:localStorage.getItem(S.lsKey)||'', edit_token: tokens[c.id] });
+      if(res?.ok){ c.content = content; c.updated_at = res.updated_at; renderList(); }
+      else alert(res?.error||'Sửa thất bại');
+    }
+
+    async function delComment(c){
+      if(!confirm('Xóa bình luận này?')) return;
+      const res = await apiPost({ action:'delete', id:c.id, secret_key:localStorage.getItem(S.lsKey)||'', edit_token: tokens[c.id] });
+      if(res?.ok){ COMMENTS = COMMENTS.filter(x=>x.id!==c.id); delete tokens[c.id]; localStorage.setItem(S.lsTokens, JSON.stringify(tokens)); renderList(); }
+      else alert(res?.error||'Xóa thất bại');
+    }
+
+    async function setStatus(c, status){
+      const res = await apiPost({ action:'status', id:c.id, status, secret_key:localStorage.getItem(S.lsKey)||'' });
+      if(res?.ok){ c.status = status; renderList(); } else alert(res?.error||'Cập nhật trạng thái thất bại');
+    }
+
+    async function maybeRefreshAdminProfile(){
+      const res = await apiPost({ action:'whoami', secret_key:localStorage.getItem(S.lsKey)||'' });
+      if(res?.ok && res.isAdmin){ ADMIN = { isAdmin:true, name:res.name }; setName(res.name); } else { ADMIN=null; }
+      renderList();
+    }
+
+    async function apiPost(obj){
+      const r = await fetch(S.api, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(obj) });
+      try { return await r.json(); } catch { return { ok:false, error:'Bad response' }; }
+    }
+
+    // First load
+    loadSnapshot().then(()=> maybeRefreshAdminProfile());
+  </script>
+    
+  <script>
+      const API = 'docs.php';
+      const cardsEl = document.getElementById('cards');
+      const statusEl = document.getElementById('status');
+      const qEl = document.getElementById('q');
+      const tagsEl = document.getElementById('tags');
+
+      let DATA = { title:'', items:[] };
+      let ACTIVE_TAG = null;
+
+      const norm = (v='') => (v+'').toLowerCase().normalize('NFKD');
+
+      function coerceTags(it){
+          // Hỗ trợ cả "tag" (string|array) lẫn "tags" (array)
+          let t = it.tags ?? it.tag ?? [];
+          if (!Array.isArray(t)) t = [t];
+          // Làm phẳng & lọc rỗng
+          return t.map(x => (x ?? '').toString().trim()).filter(Boolean);
+      }
+
+      function allTags(items){
+          const set = new Set();
+          items.forEach(it => coerceTags(it).forEach(t => set.add(t)));
+          return Array.from(set).sort((a,b)=>a.localeCompare(b));
+      }
+
+      function renderTags(items){
+          const tags = allTags(items);
+          tagsEl.innerHTML = '';
+          tags.forEach(tag => {
+              const b = document.createElement('button');
+              b.type = 'button';
+              b.className = 'tag' + (ACTIVE_TAG === tag ? ' active' : '');
+              b.textContent = tag;
+              b.onclick = () => { ACTIVE_TAG = (ACTIVE_TAG === tag ? null : tag); filterAndRender(); };
+              tagsEl.appendChild(b);
+          });
+      }
+
+      function makeCard(it){
+          const a = document.createElement('a');
+          a.className = 'card';
+          a.href = it.href;
+          a.innerHTML = `
+        <h3>${it.text ?? '(không tiêu đề)'}</h3>
+        <p class="desc">${it.description ? it.description : ''}</p>
+        <div class="badges">${coerceTags(it).map(t => `<span class="badge">${t}</span>`).join('')}</div>
+      `;
+          return a;
+      }
+
+      function filterAndRender(){
+          const q = norm(qEl.value || '');
+          let items = DATA.items || [];
+
+          // Ẩn các mục đánh dấu remove (nếu có)
+          items = items.filter(it => it.status !== 'remove');
+
+          // Lọc theo tag
+          if (ACTIVE_TAG) {
+              items = items.filter(it => coerceTags(it).includes(ACTIVE_TAG));
+          }
+
+          // Tìm kiếm tiêu đề/mô tả/tag
+          if (q) {
+              items = items.filter(it => {
+                  const text = norm(it.text);
+                  const desc = norm(it.description || '');
+                  const tags = norm(coerceTags(it).join(' '));
+                  return text.includes(q) || desc.includes(q) || tags.includes(q);
+              });
+          }
+
+          cardsEl.innerHTML = '';
+          if (!items.length) {
+              statusEl.textContent = 'Không có tài liệu phù hợp.';
+              return;
+          }
+          statusEl.textContent = '';
+          items.forEach(it => cardsEl.appendChild(makeCard(it)));
+      }
+
+      async function boot(){
+          statusEl.textContent = 'Đang tải...';
+          try {
+              const r = await fetch(API, { cache: 'no-store' });
+              if (!r.ok) throw new Error('HTTP ' + r.status);
+              DATA = await r.json();
+              renderTags(DATA.items || []);
+              filterAndRender();
+          } catch (e) {
+              console.error(e);
+              statusEl.className = 'error';
+              statusEl.textContent = 'Không tải được dữ liệu từ docs.php.';
+          }
+      }
+
+      qEl.addEventListener('input', filterAndRender);
+      boot();
+    </script>
+</body>
+</html>

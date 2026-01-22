@@ -1,0 +1,65 @@
+{
+  "title": "Danh sách tài liệu",
+  "items": [
+    {
+      "href": "tutor-setup.html",
+      "text": "1. Cài đặt môi trường Tutor",
+      "tag": ["Setup", "Tutor"],
+      "description": "Chuẩn bị máy, Docker, và cài Tutor v20."
+    },
+    {
+      "href": "access_platform.html",
+      "text": "Hướng dẫn truy cập nền tảng(local)",
+      "tag": ["Setup", "Tutor"],
+      "description": "Truy cập nền tảng local thông qua IP nội bộ mạng."
+    },
+    {
+      "href": "rewrite-theme-updated.html",
+      "text": "Cài đặt & setup custom theme",
+      "tag": ["Theme", "UI"],
+      "description": "Tạo theme riêng, tùy biến Mako/SCSS/Paragon."
+    },
+    {
+      "href": "course-creator.html",
+      "text": "Bật Course Creation Group (Local)",
+      "tag": "Admin",
+      "description": "Cấp quyền tạo khóa học trong môi trường local."
+    },
+    {
+      "href": "plugin-flags.html",
+      "text": "Tutor Open edX — Danh sách plugin & cờ",
+      "tag": "Reference",
+      "description": "Tổng hợp plugin/cờ cấu hình thường dùng."
+    },
+    {
+      "href": "google-tpa.html",
+      "text": "Bật đăng nhập Google (TPA)",
+      "tag": ["Auth", "TPA"],
+      "description": "Cấu hình đăng nhập Google cho Open edX."
+    },
+    {
+      "href": "increment_upload_limit.html",
+      "text": "Tăng giới hạn upload trong Studio",
+      "tag": "Studio",
+      "description": "Tăng max_size upload qua Caddy & Django."
+    },
+    {
+      "href": "cusc_edx_config.html",
+      "text": "Cài đặt cấu hình bằng Plugin",
+      "tag": ["LMS", "Ecommerce"],
+      "description": "Cài đặt các biến ENV và các cài dặt khác."
+    },
+    {
+      "href": "payment-api-config.html",
+      "text": "Cài đặt cấu hình cổng thanh toán",
+      "tag": ["LMS", "Ecommerce"],
+      "description": "Cài đặt cấu hình cho cổng thanh toán bên thứ ba."
+    },
+    {
+      "href": "payment-api.html",
+      "text": "Các endpoint api",
+      "tag": ["LMS", "Ecommerce"],
+      "description": "Thông tin các endpoint trong cusc_edx_api"
+    }
+  ]
+}

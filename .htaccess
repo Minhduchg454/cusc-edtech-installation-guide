@@ -1,0 +1,16 @@
+Options -Indexes -MultiViews
+AddDefaultCharset utf-8
+
+RewriteEngine On
+RewriteBase /
+
+# /docs -> trang mục lục (chọn 1 trong 2)
+# 1) chuyển sang dev-plugin
+RewriteRule ^docs/?$ /docs/dev-plugin [R=302,L]
+# 2) hoặc nếu bạn có trang riêng: RewriteRule ^docs/?$ docs.html [L]
+
+# --- ROUTES ---
+RewriteRule ^docs/dev-plugin/?$      /dev-plugin.html      [L]
+RewriteRule ^docs/google-tpa/?$      /google-tpa.html      [L]
+RewriteRule ^docs/course-creator/?$  /course-creator.html  [L]
+RewriteRule ^docs/plugin-flags/?$    /plugin-flags.html    [L]
