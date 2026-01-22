@@ -66,6 +66,11 @@ body {
   }
 }
 
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
 .sidebar {
   position: sticky;
   top: 16px;
@@ -128,6 +133,12 @@ body {
 
 .home-btn {
   font-size: small;
+  text-decoration: none;
+}
+a.toggle,
+a.home-btn {
+  font-size: small;
+  text-decoration: none !important;
 }
 
 .content {
