@@ -172,12 +172,11 @@ studio.local.openedx.io</code></pre>
           Bước 2 — Tạo plugin Tutor: bật cờ, backend & lưu secret an toàn
         </h2>
         <h3 id="plugin-file">2.1) Tạo file plugin</h3>
-        <p>
-          <strong>File</strong>:
-          <code class="inline"
-            >$(tutor plugins printroot)/thirdparty-google.yml</code
-          >
-        </p>
+        <p>Di chuyển đến thư mục lưu plugins</p>
+        <pre><button class="copy">Copy</button><code>cd $(tutor plugins printroot)</code></pre>
+        <p>Tạo file thirdparty-google.yml</p>
+        <pre><button class="copy">Copy</button><code>subl thirdparty-google.yml</code></pre>
+        <p>Dán nội dung vào file:</p>
         <pre><button class="copy">Copy</button><code class="yaml">name: thirdparty-google
 version: "1.0.0"
 
@@ -216,7 +215,15 @@ patches:
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "{{ GOOGLE_OAUTH2_SECRET }}"</code></pre>
 
         <h3 id="set-secrets">2.2) Điền Client ID/Secret</h3>
-        <pre><button class="copy">Copy</button><code># Điền Client ID/Secret lấy từ Google Cloud
+        <p>Truy cập trang web và tạo OAuth 2.0 Client IDs</p>
+        <pre><button class="copy">Copy</button><code>https://console.developers.google.com/?hl=vi</code></pre>
+        <p>
+          Nhớ điền đúng địa chỉ trang web vào Authorized redirect URIs trong
+          phần tạo OAuth
+        </p>
+        <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/auth/complete/google-oauth2/</code></pre>
+        <p>Điền Client ID/Secret lấy từ Google Cloud</p>
+        <pre><button class="copy">Copy</button><code>
 tutor config save --set GOOGLE_OAUTH2_KEY="YOUR_GOOGLE_CLIENT_ID" \
                   --set GOOGLE_OAUTH2_SECRET="YOUR_GOOGLE_CLIENT_SECRET"</code></pre>
 
@@ -244,6 +251,8 @@ ENABLE_COMBINED_LOGIN_REGISTRATION = True</code></pre>
 
         <hr />
         <h2 id="provider">Bước 3 — Tạo Provider trong Django Admin</h2>
+        <p>Với môi trường Dev thì đi đúng đường dẫn</p>
+        <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/admin/third_party_auth/oauth2providerconfig/</code></pre>
         <p>
           <strong>LMS →</strong>
           <code class="inline"
@@ -251,6 +260,7 @@ ENABLE_COMBINED_LOGIN_REGISTRATION = True</code></pre>
           >
           → <strong>Add</strong>
         </p>
+
         <ul>
           <li>
             <strong>Backend name</strong>:
