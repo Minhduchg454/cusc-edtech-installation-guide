@@ -46,7 +46,7 @@
     },
     {
       "href": "/pages/cusc_edx_config.html",
-      "text": "8. Cài đặt cấu hình bằng Plugin",
+      "text": "8. Cài đặt plugin cusc edx config",
       "tag": ["LMS", "Ecommerce"],
       "description": "Cài đặt các biến ENV và các cài dặt khác."
     },

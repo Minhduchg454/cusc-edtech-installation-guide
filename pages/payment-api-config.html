@@ -99,12 +99,28 @@
           <code class="inline">dev</code>)
         </h2>
         <h3 id="dev-mount">3.1) Mount source plugin vào container LMS</h3>
+        <p>Chọn thư mục chưa plugin ở home/dev</p>
+        <pre><button class="copy">Copy</button><code>mkdir /home/openedx/dev</code></pre>
+        <p>Clone repo vào ổ cứng</p>
+        <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/cusc_edx_api</code></pre>
+
         <p>
-          Giả sử source plugin nằm ở host:
-          <code class="inline">/home/dev/projects/cusc_edx_api</code>. Mount vào
-          container, ví dụ <code class="inline">/mnt/cusc_edx_api</code> để có
-          thể <code class="inline">pip install -e .</code>.
+          Mount vào container, ví dụ
+          <code class="inline">/mnt/cusc_edx_api</code> để có thể
+          <code class="inline">pip install -e .</code>.
         </p>
+        <p>Mở file docker-compose.override.yml</p>
+        <pre><button class="copy">Copy</button><code>subl ~/.local/share/tutor/env/dev/docker-compose.override.yml</code></pre>
+        <p>Dán nội dung vào:</p>
+        <pre><button class="copy">Copy</button><code>services:
+  lms:
+    volumes:
+      - ~/.local/share/tutor/env/build/openedx/themes:/openedx/themes:rw
+      - /home/openedx/dev/cusc_edx_api:/mnt/cusc_edx_api
+  cms:
+    volumes:
+      - ~/.local/share/tutor/env/build/openedx/themes:/openedx/themes:rw
+      - /home/openedx/dev/cusc_edx_api:/mnt/cusc_edx_api</code></pre>
 
         <h3 id="dev-install">3.2) Cài plugin vào Python env của LMS (dev)</h3>
         <pre><button class="copy">Copy</button><code>tutor dev run lms bash</code></pre>
@@ -121,10 +137,9 @@ print('entrypoints:', pkg_resources.get_entry_map('cusc-edx-api').get('lms.djang
         <pre><button class="copy">Copy</button><code>#Kỳ vọng thấy: 
 OK import: /mnt/cusc_edx_api/cusc_edx_api/__init__.py
 entrypoints: {'cusc_edx_api': EntryPoint.parse('cusc_edx_api = cusc_edx_api.apps:CuscEdxApiConfig')}</code></pre>
-        <strong
-          >Để api có thể hoạt động được cần
-          <a href="#prod-migrate">6.3 Chạy migrate cho plugin</a></strong
-        >
+
+        <p>Chạy migrate cho plugin</p>
+        <pre><button class="copy">Copy</button><code>tutor dev run lms ./manage.py lms migrate cusc_edx_api</code></pre>
 
         <h3 id="dev-settings">
           3.3) Thêm vào <code class="inline">INSTALLED_APPS</code> và đổi

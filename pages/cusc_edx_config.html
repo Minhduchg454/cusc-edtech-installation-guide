@@ -40,17 +40,25 @@
           Plugin cấu hình tối giản cho Open edX/Tutor: tăng giới hạn upload ở
           Studio (CMS) và cung cấp 2 biến cấu hình trên LMS:
           <code class="inline">CUSC_PAYMENT_API_TOKEN</code> (shared secret) và
-          <code class="inline">CUSC_CHECKOUT_URL</code> (URL trang checkout
-          Node). Không thêm container hay phụ thuộc mới.
+          <code class="inline">CUSC_CHECKOUT_URL</code>
+          <br />
+          (URL trang checkout Node). Không thêm container hay phụ thuộc mới.
         </p>
 
-        <h2 id="plugin-file">1) File plugin (copy-paste)</h2>
+        <h2 id="place">1. Di chuyển đến thư mục chứa cấu hình plugins</h2>
+        <pre><button class="copy">Copy</button><code>cd ~/.local/share/tutor-plugins/</code></pre>
         <p>
-          Dán nội dung dưới đây vào
-          <code class="inline"
-            >~/.local/share/tutor-plugins/cusc_edx_config.yml</code
-          >:
+          Nếu không có file thì dùng lệnh tạo (mkdir -p
+          ~/.local/share/tutor-plugins/)
         </p>
+
+        <h2 id="plugin-file">2. Điền nội dung file plugin</h2>
+        <p>Mở file:</p>
+
+        <pre><button class="copy">Copy</button><code> subl cusc_edx_config.yml</code></pre>
+
+        <p>Dán vào nội dung bên dưới:</p>
+
         <pre><button class="copy">Copy</button><code>name: cusc_edx_config
 version: "1.0.0"
 
@@ -103,20 +111,20 @@ patches:
           </ul>
         </div>
 
-        <h2 id="install">2) Cài đặt plugin vào Tutor</h2>
-        <h3>2.1 Xác định thư mục plugins</h3>
+        <h2 id="install">3. Cài đặt plugin vào Tutor</h2>
+        <h3>3.1 Xác định thư mục plugins</h3>
         <pre><button class="copy">Copy</button><code>tutor plugins printroot
 # ví dụ: ~/.local/share/tutor-plugins</code></pre>
 
-        <h3>2.2 Sao chép file vào thư mục đó</h3>
+        <h3>3.2 Sao chép file vào thư mục đó</h3>
         <pre><button class="copy">Copy</button><code>cp ./cusc_edx_config.yml ~/.local/share/tutor-plugins/cusc_edx_config.yml</code></pre>
 
-        <h3>2.3 Bật plugin & render lại cấu hình</h3>
+        <h3>3.3 Bật plugin & render lại cấu hình</h3>
         <pre><button class="copy">Copy</button><code>tutor plugins enable cusc_edx_config
 # render lại templates & patches
 tutor config save</code></pre>
 
-        <h3>2.4 Thiết lập biến cấu hình (ví dụ DEV)</h3>
+        <h3>3.4 Thiết lập biến cấu hình (ví dụ DEV)</h3>
         <p>
           <span class="badge">Theo yêu cầu</span> Thiết lập URL checkout chạy ở
           cổng <code class="inline">5000</code> và đặt token tạm:
@@ -130,7 +138,7 @@ tutor config save</code></pre>
           <code class="inline">http://localhost:3000/checkout</code>.
         </p>
 
-        <h3>2.5 Khởi động lại dịch vụ</h3>
+        <h3>3.5 Khởi động lại dịch vụ</h3>
         <pre><button class="copy">Copy</button><code># Local
 tutor local restart lms cms
 
@@ -144,22 +152,22 @@ tutor k8s upgrade</code></pre>
           <span class="ok">không cần</span> build lại image.
         </p>
 
-        <h2 id="verify">3) Kiểm tra cấu hình đã áp dụng</h2>
-        <h3>3.1 Kiểm tra trên CMS (Studio)</h3>
+        <h2 id="verify">4. Kiểm tra cấu hình đã áp dụng</h2>
+        <h3>4.1 Kiểm tra trên CMS (Studio)</h3>
         <pre><button class="copy">Copy</button><code># MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB
 tutor local run cms ./manage.py cms shell -c "from django.conf import settings; print(settings.MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB)"
 
 # UPLOAD_CHUNK_SIZE_IN_MB
 tutor local run cms ./manage.py cms shell -c "from django.conf import settings; print(getattr(settings, 'UPLOAD_CHUNK_SIZE_IN_MB', None))"</code></pre>
 
-        <h3>3.2 Kiểm tra trên LMS</h3>
+        <h3>4.2 Kiểm tra trên LMS</h3>
         <pre><button class="copy">Copy</button><code># Không in token ra màn hình, chỉ kiểm tra có/không
 tutor local run lms ./manage.py lms shell -c "from django.conf import settings; print(bool(getattr(settings, 'CUSC_PAYMENT_API_TOKEN', None)))"
 
 # Xem giá trị CUSC_CHECKOUT_URL hiện tại
 tutor local run lms ./manage.py lms shell -c "from django.conf import settings; print(getattr(settings, 'CUSC_CHECKOUT_URL', None))"</code></pre>
 
-        <h2 id="notes">4) Ghi chú & bảo mật</h2>
+        <h2 id="notes">5. Ghi chú & bảo mật</h2>
         <ul>
           <li>
             <strong>Token bảo mật:</strong> Không commit token thật lên Git
@@ -194,7 +202,7 @@ tutor local run lms ./manage.py lms shell -c "from django.conf import settings; 
           </li>
         </ul>
 
-        <h2 id="nginx">5) Proxy/Nginx khuyến nghị (tuỳ chọn)</h2>
+        <h2 id="nginx">6. Proxy/Nginx khuyến nghị (tuỳ chọn)</h2>
         <p>
           Nếu Node checkout chạy cổng 5000 trên cùng máy, có thể reverse-proxy
           ra subpath/domain ổn định.
@@ -212,13 +220,13 @@ location /checkout/ {
           <code class="inline">https://apps.local.openedx.io/checkout</code>).
         </p>
 
-        <h2 id="rollback">6) Rollback/Gỡ plugin</h2>
+        <h2 id="rollback">7. Rollback/Gỡ plugin</h2>
         <pre><button class="copy">Copy</button><code>tutor plugins disable cusc_edx_config
 tutor config save
 # Khởi động lại dịch vụ
 tutor local restart lms cms</code></pre>
 
-        <h2 id="faq">7) FAQ nhanh</h2>
+        <h2 id="faq">8. FAQ nhanh</h2>
         <ul>
           <li>
             <strong>Có cần build image?</strong> Thường là <em>không</em>.
