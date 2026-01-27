@@ -34,16 +34,21 @@
         <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
 
         <!-- ===== NỘI DUNG TRANG ===== -->
-       <h1 id="top">Dev Setup — Cài đặt Tutor Open edX từ đầu</h1>
+        <h1 id="top">Dev Setup — Cài đặt Tutor Open edX từ đầu</h1>
         <p class="muted">
-          Lộ trình <strong>ít lỗi nhất</strong> cho Ubuntu (WSL2 tương tự): cài đặt <strong>Docker Engine</strong>, dùng
-          <strong>virtualenv</strong>, cấu hình <strong>hosts</strong>, <strong>launch</strong> Local, tạo <strong>admin</strong>, bật
-          <strong>Dev</strong> & chèn <strong>kỳ vọng hiển thị</strong> sau mỗi bước.
+          Lộ trình <strong>ít lỗi nhất</strong> cho Ubuntu (WSL2 tương tự): cài
+          đặt <strong>Docker Engine</strong>, dùng <strong>virtualenv</strong>,
+          cấu hình <strong>hosts</strong>, <strong>launch</strong> Local, tạo
+          <strong>admin</strong>, bật <strong>Dev</strong> & chèn
+          <strong>kỳ vọng hiển thị</strong> sau mỗi bước.
         </p>
 
         <hr />
         <h2 id="install-docker">1. Cài đặt Docker (Cho Máy Ảo Ubuntu)</h2>
-        <p>Nếu máy ảo chưa có Docker, hãy chạy các lệnh sau để cài đặt bản Engine chính thức:</p>
+        <p>
+          Nếu máy ảo chưa có Docker, hãy chạy các lệnh sau để cài đặt bản Engine
+          chính thức:
+        </p>
         <pre><button class="copy">Copy</button><code># Cập nhật và cài đặt các gói hỗ trợ
 sudo apt update && sudo apt install -y ca-certificates curl gnupg lsb-release
 
@@ -75,7 +80,9 @@ Python 3.11.x
 ...</code></pre>
         </blockquote>
         <div class="callout">
-          <strong>Lưu ý quan trọng:</strong> Sau khi chạy lệnh <code>usermod</code>, nếu không thể kết nối docker socket, ông chủ hãy khởi động lại máy ảo (reboot).
+          <strong>Lưu ý quan trọng:</strong> Sau khi chạy lệnh
+          <code>usermod</code>, nếu không thể kết nối docker socket, ông chủ hãy
+          khởi động lại máy ảo (reboot).
         </div>
 
         <h2 id="venv">3. Tạo virtualenv & cài Tutor (ổn định nhất)</h2>
@@ -99,7 +106,7 @@ tutor --version</code></pre>
 </code></pre>
         </blockquote>
 
-        <h2 id="config">3. Cấu hình nền tảng & map hosts</h2>
+        <h2 id="config">4. Cấu hình nền tảng & map hosts</h2>
         <pre><button class="copy">Copy</button><code>tutor config save \
   --set OPENEDX_LMS_BASE=local.openedx.io \
   --set OPENEDX_CMS_BASE=studio.local.openedx.io \
@@ -118,7 +125,7 @@ Environment generated in /home/&lt;user&gt;/.local/share/tutor/env
 </code></pre>
         </blockquote>
 
-        <h2 id="launch">4. Khởi tạo Local & chạy nền</h2>
+        <h2 id="launch">5. Khởi tạo Local & chạy nền</h2>
         <pre><button class="copy">Copy</button><code># Launch (tạo env, kéo images, init DB)
 tutor local launch
 
@@ -137,7 +144,7 @@ tutor local logs --tail=120 cms</code></pre>
 </code></pre>
         </blockquote>
 
-        <h2 id="migrate">5. Chạy migrations (khi thiếu bảng)</h2>
+        <h2 id="migrate">6. Chạy migrations (khi thiếu bảng)</h2>
         <p>
           Nếu gặp lỗi như
           <code class="inline"
@@ -160,7 +167,7 @@ tutor local run cms ./manage.py cms showmigrations | tail -n 60</code></pre>
 </code></pre>
         </blockquote>
 
-        <h2 id="admin">6. Tạo tài khoản admin & đặt mật khẩu</h2>
+        <h2 id="admin">7. Tạo tài khoản admin & đặt mật khẩu</h2>
         <pre><button class="copy">Copy</button><code># Tạo superuser
 tutor local do createuser --staff --superuser admin admin@local.openedx.io
 
@@ -176,7 +183,7 @@ u.set_password('123'); u.save(); print('OK')
 </code></pre>
         </blockquote>
 
-        <h2 id="urls">7. Truy cập thử</h2>
+        <h2 id="urls">8. Truy cập thử</h2>
         <ul>
           <li>LMS: <code class="inline">http://local.openedx.io</code></li>
           <li>
@@ -186,7 +193,7 @@ u.set_password('123'); u.save(); print('OK')
 
         <hr />
         <h2 id="dev">
-          8. Bật môi trường Dev (tutor <code class="inline">dev</code>)
+          9. Bật môi trường Dev (tutor <code class="inline">dev</code>)
         </h2>
         <p>
           Dev dùng image <code class="inline">openedx-dev</code> build tại chỗ.
@@ -215,7 +222,7 @@ tutor dev start</code></pre>
           <code class="inline">tutor dev start</code>.
         </div>
 
-        <h3>8.1. Migrations, superuser & logs trong Dev</h3>
+        <h3>9.1. Migrations, superuser & logs trong Dev</h3>
         <pre><button class="copy">Copy</button><code># Migrate trong dev
 tutor dev run lms ./manage.py lms migrate --noinput
 tutor dev run cms ./manage.py cms migrate --noinput
@@ -229,7 +236,7 @@ tutor dev logs --tail=200 lms
 tutor dev logs --tail=200 cms</code></pre>
 
         <hr />
-        <h2 id="fixdb">9. (Tuỳ chọn) Sửa lỗi MySQL “Access denied” nhanh</h2>
+        <h2 id="fixdb">10. (Tuỳ chọn) Sửa lỗi MySQL “Access denied” nhanh</h2>
         <p>
           Nếu user <code class="inline">openedx</code> trong MySQL lệch mật khẩu
           với cấu hình Tutor:
@@ -257,7 +264,7 @@ openedx %       caching_sha2_password
         </blockquote>
 
         <hr />
-        <h2 id="cleanup">10. (Phụ lục) Xóa sạch để làm lại từ đầu</h2>
+        <h2 id="cleanup">11. (Phụ lục) Xóa sạch để làm lại từ đầu</h2>
         <pre><button class="copy">Copy</button><code>tutor dev stop || true
 tutor local stop || true
 
@@ -283,7 +290,7 @@ docker image ls | awk '/overhangio\\/openedx|openedx-dev|overhangio\\/openedx-mf
 docker system prune -f</code></pre>
 
         <hr />
-        <h2 id="troubleshoot">11. Troubleshooting nhanh</h2>
+        <h2 id="troubleshoot">12. Troubleshooting nhanh</h2>
         <table>
           <thead>
             <tr>

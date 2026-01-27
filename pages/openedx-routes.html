@@ -1,0 +1,143 @@
+<!-- Only copy, no edit -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>template web</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <a
+              href="/"
+              class="toggle home-btn"
+              style="font-size: small; text-decoration: none"
+              >🏠 Trang chủ</a
+            >
+            <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          </div>
+          <h4>
+            Đang xem:
+            <code class="inline" id="current-page">—</code>
+          </h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <h1 id="top">Hướng dẫn truy cập các đường dẫn vào Open edX</h1>
+
+        <h2 id="env_dev">1. Môi trường Dev (Tutor dev)</h2>
+
+        <h3 id="require_dev">Khởi chạy môi trường dev</h3>
+        <div class="callout">
+          <p><strong>Yêu cầu:</strong></p>
+          <ul>
+            <li>Đã cài đặt tutor</li>
+            <li>Đã khởi chạy môi trường dev</li>
+          </ul>
+        </div>
+
+        <p>Khởi động:</p>
+        <pre><button class="copy">Copy</button><code>tutor dev start</code></pre>
+
+        <p>Dừng môi trường:</p>
+        <pre><button class="copy">Copy</button><code>tutor dev stop</code></pre>
+
+        <h3 id="routes_dev">Các đường dẫn:</h3>
+
+        <nav>
+          <ul>
+            <li>
+              <strong>LMS (Learner – học viên) ~ trang chủ</strong><br />
+              <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/</code></pre>
+            </li>
+            <li>
+              <strong
+                >CMS / Studio (quản trị khóa học) ~ dành cho giáo viên, người
+                tạo khóa học</strong
+              ><br />
+              <pre><button class="copy">Copy</button><code>http://studio.local.openedx.io:8001/</code></pre>
+            </li>
+            <li>
+              <strong>Django Admin ~ dành cho quản trị viên hệ thống</strong
+              ><br />
+              <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/admin</code></pre>
+            </li>
+          </ul>
+        </nav>
+        <h3 id="require_local">Khởi chạy môi trường local</h3>
+        <div class="callout">
+          <p><strong>Yêu cầu:</strong></p>
+          <ul>
+            <li>Đã cấu hình Tutor (config.yml)</li>
+            <li>Đã build image Open edX</li>
+          </ul>
+        </div>
+
+        <p>Khởi động môi trường local / production:</p>
+        <pre><button class="copy">Copy</button><code>tutor local start</code></pre>
+
+        <p>Dừng môi trường:</p>
+        <pre><button class="copy">Copy</button><code>tutor local stop</code></pre>
+
+        <h3 id="routes_local">Các đường dẫn:</h3>
+
+        <nav>
+          <ul>
+            <li>
+              <strong>LMS (Learner – học viên) ~ trang chủ</strong><br />
+              <pre><button class="copy">Copy</button><code>https://&lt;LMS_HOST&gt;/</code></pre>
+            </li>
+            <li>
+              <strong
+                >CMS / Studio (quản trị khóa học) ~ dành cho giáo viên, người
+                tạo khóa học</strong
+              ><br />
+              <pre><button class="copy">Copy</button><code>https://&lt;CMS_HOST&gt;/</code></pre>
+            </li>
+            <li>
+              <strong>Django Admin ~ dành cho quản trị viên hệ thống</strong
+              ><br />
+              <pre><button class="copy">Copy</button><code>https://&lt;LMS_HOST&gt;/admin</code></pre>
+            </li>
+          </ul>
+        </nav>
+
+        <h3 id="config_local">Xác định domain và port thực tế</h3>
+
+        <pre><button class="copy">Copy</button><code>tutor config printroot</code></pre>
+
+        <p>Các biến thường gặp:</p>
+
+        <ul>
+          <li><code>LMS_HOST</code></li>
+          <li><code>CMS_HOST</code></li>
+          <li><code>ENABLE_HTTPS</code></li>
+          <li><code>DEFAULT_SITE_DOMAIN</code></li>
+        </ul>
+
+        <h3 id="check_routes_local">Kiểm tra route trong môi trường local</h3>
+
+        <pre><button class="copy">Copy</button><code>tutor local exec lms python manage.py lms show_urls</code></pre>
+
+        <p>
+          Dùng để xác nhận endpoint tồn tại thực tế (bắt buộc khi debug API,
+          plugin, hoặc routing Nginx).
+        </p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>
