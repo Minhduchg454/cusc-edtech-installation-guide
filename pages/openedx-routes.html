@@ -75,12 +75,15 @@
             </li>
           </ul>
         </nav>
+
+        <h2 id="env_dev">2. Môi trường Local (Tutor local)</h2>
         <h3 id="require_local">Khởi chạy môi trường local</h3>
         <div class="callout">
           <p><strong>Yêu cầu:</strong></p>
           <ul>
             <li>Đã cấu hình Tutor (config.yml)</li>
             <li>Đã build image Open edX</li>
+            <li>Đã khởi chạy môi trường local</li>
           </ul>
         </div>
 
@@ -91,49 +94,40 @@
         <pre><button class="copy">Copy</button><code>tutor local stop</code></pre>
 
         <h3 id="routes_local">Các đường dẫn:</h3>
+        <p>Xác định domain với các biến</p>
+        <ul>
+          <li>LMS_HOST</li>
+          <li>CMS_HOST</li>
+        </ul>
+        <pre><button class="copy">Copy</button><code>tutor config printvalue LMS_HOST</code></pre>
+        <blockquote>
+          Kỳ vọng hiển thị:
+          <pre><code>tutor config printvalue CMS_HOST
+local.openedx.io
+studio.local.openedx.io
+</code></pre>
+        </blockquote>
 
         <nav>
           <ul>
             <li>
               <strong>LMS (Learner – học viên) ~ trang chủ</strong><br />
-              <pre><button class="copy">Copy</button><code>https://&lt;LMS_HOST&gt;/</code></pre>
+              <pre><button class="copy">Copy</button><code>https://local.openedx.io/</code></pre>
             </li>
             <li>
               <strong
                 >CMS / Studio (quản trị khóa học) ~ dành cho giáo viên, người
                 tạo khóa học</strong
               ><br />
-              <pre><button class="copy">Copy</button><code>https://&lt;CMS_HOST&gt;/</code></pre>
+              <pre><button class="copy">Copy</button><code>https://studio.local.openedx.io/</code></pre>
             </li>
             <li>
               <strong>Django Admin ~ dành cho quản trị viên hệ thống</strong
               ><br />
-              <pre><button class="copy">Copy</button><code>https://&lt;LMS_HOST&gt;/admin</code></pre>
+              <pre><button class="copy">Copy</button><code>https://local.openedx.io/admin</code></pre>
             </li>
           </ul>
         </nav>
-
-        <h3 id="config_local">Xác định domain và port thực tế</h3>
-
-        <pre><button class="copy">Copy</button><code>tutor config printroot</code></pre>
-
-        <p>Các biến thường gặp:</p>
-
-        <ul>
-          <li><code>LMS_HOST</code></li>
-          <li><code>CMS_HOST</code></li>
-          <li><code>ENABLE_HTTPS</code></li>
-          <li><code>DEFAULT_SITE_DOMAIN</code></li>
-        </ul>
-
-        <h3 id="check_routes_local">Kiểm tra route trong môi trường local</h3>
-
-        <pre><button class="copy">Copy</button><code>tutor local exec lms python manage.py lms show_urls</code></pre>
-
-        <p>
-          Dùng để xác nhận endpoint tồn tại thực tế (bắt buộc khi debug API,
-          plugin, hoặc routing Nginx).
-        </p>
       </main>
     </div>
 
