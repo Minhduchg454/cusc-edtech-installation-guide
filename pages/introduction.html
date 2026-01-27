@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hardware Requirements — Ubuntu 24.04</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+    <link rel="stylesheet" href="../assets/pageCSS/tutor-setup.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <a href="/" class="toggle home-btn" style="font-size: small; text-decoration: none">🏠 Trang chủ</a>
+            <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          </div>
+          <h4>Đang xem: <code class="inline" id="current-page">Hardware Req</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <h1 id="top">Yêu cầu phần cứng tối ưu cho Ubuntu 24.04</h1>
+        <p class="muted">
+          Để vận hành <strong>Tutor Open edX</strong> mượt mà trên máy ảo (VM), việc cấu hình tài nguyên ban đầu là cực kỳ quan trọng nhằm tránh lỗi treo máy khi build images.
+        </p>
+
+        <hr />
+
+        <h2 id="os-version">1. Hệ điều hành khuyến nghị</h2>
+        <ul>
+          <li><strong>OS:</strong> Ubuntu 24.04 LTS (Noble Numbat).</li>
+          <li><strong>Kiến trúc:</strong> x86_64 (64-bit).</li>
+        </ul>
+
+        <h2 id="hardware-specs">2. Thông số phần cứng tối thiểu</h2>
+        <div class="callout">
+          <strong>Cảnh báo:</strong> Open edX là một nền tảng cực kỳ nặng (microservices). Việc cấp thiếu tài nguyên sẽ dẫn đến lỗi <code>Exit Code 137</code> (Out of Memory).
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Thành phần</th>
+              <th>Mức tối thiểu</th>
+              <th>Lý do</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>RAM</strong></td>
+              <td><strong>8GB</strong></td>
+              <td>Cần thiết để build image <code>openedx-dev</code> và chạy các service MySQL, MongoDB, Elasticsearch cùng lúc.</td>
+            </tr>
+            <tr>
+              <td><strong>Ổ cứng (ROM)</strong></td>
+              <td><strong>100GB</strong></td>
+              <td>Các Docker Images, Volumes dữ liệu và logs phát sinh rất nhanh trong quá trình phát triển.</td>
+            </tr>
+            <tr>
+              <td><strong>CPU</strong></td>
+              <td><strong>4 Cores</strong></td>
+              <td>Giúp quá trình compile Sass và chạy migrations nhanh hơn, tránh nghẽn cổ chai.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="vm-check">3. Kiểm tra thông số hiện tại</h2>
+        <p>Ông chủ có thể chạy lệnh này trên Terminal để kiểm tra máy ảo của mình đã đạt chuẩn chưa:</p>
+        <pre><button class="copy">Copy</button><code># Kiểm tra RAM
+free -h
+
+# Kiểm tra dung lượng ổ cứng
+df -h /
+
+# Kiểm tra số nhân CPU
+nproc</code></pre>
+
+        <h2 id="tips">4. Lưu ý khi tạo Máy ảo (VirtualBox/VMware)</h2>
+        <ul>
+          <li><strong>Dynamic Disk:</strong> Nên để ổ cứng ở chế độ "Dynamically allocated" nhưng giới hạn tối đa 100GB.</li>
+          <li><strong>Network:</strong> Nên dùng <code>Bridge Adapter</code> để máy ảo có IP riêng, dễ dàng map hosts từ máy host.</li>
+          <li><strong>Virtualization:</strong> Đảm bảo đã bật <code>VT-x/AMD-V</code> trong BIOS của máy thật.</li>
+        </ul>
+
+        <hr />
+        <p style="margin-top: 24px">
+          <a href="tutor-setup.html" class="toggle" style="text-decoration: none">Tiếp tục bước cài đặt Docker ➔</a>
+        </p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

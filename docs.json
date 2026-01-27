@@ -2,6 +2,12 @@
   "title": "Danh sách tài liệu",
   "items": [
     {
+      "href": "/pages/introduction.html",
+      "text": "0. Yêu cầu hệ thống",
+      "tag": "Introduction",
+      "description": "Yêu cầu hệ thống"
+    },
+    {
       "href": "/pages/access_platform.html",
       "text": "1. Hướng dẫn truy cập nền tảng(local)",
       "tag": ["Setup", "Tutor"],
