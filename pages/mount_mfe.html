@@ -40,102 +40,132 @@
           Hướng dẫn clone micro-frontend từ repo đã xây dựng sẳn.
         </p>
 
-        <h2 id="knowledge">Thông tin chung</h2>
+        <h2 id="knowledge">1. Thông tin chung</h2>
         <p>
           OpenEdx cung cấp sẳn các micro-frontend (MFE) giúp tùy biến giao diện.
           Truy cập vào kho repo của OpenEdx để tìm các MFE sẳn có và các MFE bắt
           đầu với frontend-app
         </p>
         <pre><button class="copy">Copy</button><code>https://github.com/orgs/openedx/repositories?q=frontend-app</code></pre>
+        <p>Danh sách các repo đã tùy chỉnh</p>
+        <p>- Trang đăng ký/đăng nhập:</p>
+        <pre>
+  <button class="copy">Copy</button><code>https://github.com/NekoNeko6996/frontend-app-authn</code>
+</pre>
 
-        <h2 id="setup">Setup khung sườn</h2>
-        <p>Đi tới thư mục themes của Open edX trong Tutor:</p>
-        <pre><button class="copy">Copy</button><code>cd $(tutor config printroot)/env/build/openedx/themes</code></pre>
+        <p>
+          - Trang thông tin cá nhân (đổi tên thành
+          <code>frontend-app-profile</code> khi clone):
+        </p>
+        <pre>
+  <button class="copy">Copy</button><code>https://github.com/NekoNeko6996/frontend-app-profile-1</code>
+</pre>
 
-        <p>Clone repo theme mẫu từ GitHub:</p>
-        <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/tutor-edx-mytheme.git</code></pre>
+        <p>
+          - Trang cài đặt thông tin cá nhân (đổi tên thành<code
+            >frontend-app-account</code
+          >
+          khi clone):
+        </p>
+        <pre>
+  <button class="copy">Copy</button><code>https://github.com/NekoNeko6996/frontend-app-account-1</code>
+</pre>
 
-        <p>Mở thư mục hiện hành (Cài nautilus):</p>
-        <pre><button class="copy">Copy</button><code>nautilus .</code></pre>
-
-        <hr />
-        <h2 id="set-theme">Dev mount thẳng thư mục build của Tutor</h2>
-        <p>Tạo (hoặc sửa):</p>
-        <pre><button class="copy">Copy</button><code>subl ~/.local/share/tutor/env/dev/docker-compose.override.yml</code></pre>
-        <p>Thêm (hoặc sửa) đoạn sau trong file yml:</p>
-        <pre><button class="copy">Copy</button><code>services:
-  lms:
-    volumes:
-      - ~/.local/share/tutor/env/build/openedx/themes:/openedx/themes:rw
-  cms:
-    volumes:
-      - ~/.local/share/tutor/env/build/openedx/themes:/openedx/themes:rw</code></pre>
-
-        <p>Set theme của tutor dev sang <strong>tutor-edx-mytheme</strong></p>
-        <pre><button class="copy">Copy</button><code>tutor config save --set LMS_SITE_THEME=tutor-edx-mytheme --set CMS_SITE_THEME=tutor-edx-mytheme</code></pre>
-
-        <p>Kiểm tra:</p>
-        <pre><button class="copy">Copy</button><code>tutor config printvalue LMS_SITE_THEME</code></pre>
+        <p>- Trang chủ học viên (đã đăng nhập):</p>
+        <pre>
+  <button class="copy">Copy</button><code>https://github.com/NekoNeko6996/frontend-app-learner-dashboard</code>
+</pre>
+        <h2 id="enable_mfe">2. Bật plugin MFE</h2>
+        <p>Kiểm tra danh sách các plugins</p>
+        <pre><button class="copy">Copy</button><code>tutor plugins list</code></pre>
         <blockquote>
           Kỳ vọng:
-          <pre><code>tutor-edx-mytheme</code></pre>
+          <pre><code>openedx@nguyenhuuduc:~/.local/share/tutor/env/build/openedx/themes$ tutor plugins list
+NAME             	STATUS   	VERSION
+creator-group    	✅ enabled	0.1.0
+cusc_edx_config  	✅ enabled	1.0.0
+mfe              	✅ enabled	20.1.0</code></pre>
         </blockquote>
-
-        <p>Set theme trực tiếp:</p>
-        <pre><button class="copy">Copy</button><code>tutor dev do settheme tutor-edx-mytheme</code></pre>
-
-        <hr />
-        <h2 id="run-dev">Chạy Tutor (Dev)</h2>
-        <p>Khởi động môi trường phát triển:</p>
-        <pre><button class="copy">Copy</button><code>tutor dev start</code></pre>
+         <p>
+          Nếu không tìm thấy plugin với tên là mfe. Tiến hành cài đặt plugin này
+        </p>
+        <h3>2.1. Cài đặt plugin mfe (nếu chưa có)</h3>
+       
+        <pre><button class="copy">Copy</button><code>tutor plugins install mfe</code></pre>
+        <p>Bật plugins</p>
+        <pre><button class="copy">Copy</button><code>tutor plugins enable mfe
+tutor config save</code></pre>
+        <p>Khởi động lại môi trường dev</p>
+        <pre><button class="copy">Copy</button><code>tutor dev stop 
+tutor dev start</code></pre>
 
         <div class="callout">
-          <strong>Lưu ý:</strong> Sau khi set theme, nếu bạn điều chỉnh
-          CSS/SCSS, hãy dùng
-          <code class="inline">tutor dev run watchthemes</code> để tự động biên
-          dịch giao diện.
-        </div>
-
-        <h2 id="trigger ui">Kích hoạt giao diện</h2>
-        <p>Mở thêm một tab terminal bên cạnh tab (tutor dev run) đang chạy</p>
-        <p>Di chuyển đến thư mục chứa theme custom</p>
-        <pre><button class="copy">Copy</button><code>cd ~/.local/share/tutor/env/build/openedx/themes/tutor-edx-mytheme/lms/static/sass/home</code></pre>
-        <p>Mở file _home.scss</p>
-        <pre><button class="copy">Copy</button><code>subl _home.scss
-</code></pre>
-        <p>Mở file -> bấm vào 1 khoản trống -> nhấn spacebar -> save file.</p>
         <p>
-          Nếu thấy như log bên tab[terminal] đang chạy [tutor dev start] in log
-          ra như này là được:
+                  <strong>
+Lưu ý:
+                  </strong> plugin mfe của Tutor không cung cấp giao diện hoàn chỉnh, nó
+                  chỉ:
+                </p>
+                <ul>
+                  <li>mở route /authn, /account, /profile, /learning…</li>
+                  <li>cấu hình reverse proxy</li>
+                  <li>
+                    cho phép mount các frontend-app React vào Open edX Giao diện thực tế
+                    phải được mount thủ công ở các bước tiếp theo.
+                  </li>
+        </div>
+        
+        </ul>
+
+        <h2 id="setup">3. Mount giao diện đăng nhập (Micro-Frontend)</h2>
+
+        <p>
+          Từ dự án khóa trước đã xây dựng, tiến hành clone và mount lại giao
+          diện đăng nhập đã phát triển.
         </p>
 
-        <blockquote>
-          <div class="callout">
-            watchthemes-1 | Done. watchthemes-1 | Generating missing
-            right-to-left CSS: watchthemes-1 | Source:
-            /openedx/themes/tutor-edx-mytheme/cms/static/css/bootstrap/studio-main.css
-            watchthemes-1 | Target:
-            /openedx/themes/tutor-edx-mytheme/cms/static/css/bootstrap/studio-main-rtl.css
-            watchthemes-1 | rtlcss: Warning! No config present, using defaults.
-            watchthemes-1 | Saving: watchthemes-1 |
-            /openedx/themes/tutor-edx-mytheme/cms/static/css/bootstrap/studio-main-rtl.css
-            watchthemes-1 | Generated. watchthemes-1 | Compiling themed CMS Sass
-            as overrides to CSS from previous step... watchthemes-1 | Source:
-            /openedx/themes/tutor-edx-mytheme/cms/static/sass watchthemes-1 |
-            Target: /openedx/themes/tutor-edx-mytheme/cms/static/css
-            watchthemes-1 | Include paths: watchthemes-1 | common/static
-            watchthemes-1 | common/static/sass watchthemes-1 | node_modules/@edx
-            watchthemes-1 | node_modules watchthemes-1 |
-            lms/static/sass/partials watchthemes-1 |
-            /openedx/themes/tutor-edx-mytheme/cms/static/sass/partials
-            watchthemes-1 | cms/static/sass/partials watchthemes-1 |
-            cms/static/sass watchthemes-1 | Files: watchthemes-1 | Done.
-            watchthemes-1 | Done compiling Sass for theme at
-            /openedx/themes/tutor-edx-mytheme! watchthemes-1 | watchthemes-1 |
-            Successfully compiled: watchthemes-1 | -
-            /openedx/themes/tutor-edx-mytheme
-          </div>
-        </blockquote>
+        <h3>3.1. Tạo thư mục làm việc và clone repo</h3>
+        <p>Tạo thư mục dev-frontend</p>
+        <pre><button class="copy">Copy</button><code>mkdir ~/dev-frontend
+cd ~/dev-frontend</code></pre>
+        <p>Clone repo</p>
+
+        <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/frontend-app-authn</code></pre>
+
+        <div class="callout">
+          <strong>Lưu ý:</strong> Nếu repo có hậu tố số (ví dụ:
+          <code class="inline">frontend-app-authn-1</code>) thì cần clone và đổi
+          tên thư mục như sau:
+        </div>
+
+        <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/frontend-app-authn-1 ./frontend-app-authn</code>
+</pre>
+
+        <h3>3.2. Cài đặt dependencies</h3>
+        <p>Di chuyển vào thư mục micro-frontend và cài node modules:</p>
+        <pre><button class="copy">Copy</button><code>cd frontend-app-authn
+npm i</code></pre>
+
+        <h3>3.3. Mount micro-frontend vào OpenEdX</h3>
+        <p>
+          Quay lại thư mục <code class="inline">dev-frontend</code> (nếu đang ở
+          trong thư mục con):
+        </p>
+        <pre><button class="copy">Copy</button><code>cd ~/dev-frontend</code></pre>
+
+        <p>Thực hiện mount frontend vào nền tảng Tutor:</p>
+        <pre><button class="copy">Copy</button><code>tutor mounts add ./frontend-app-authn</code></pre>
+
+        <h3>3.4. Khởi động nền tảng</h3>
+        <pre><button class="copy">Copy</button><code>tutor dev start</code>
+</pre>
+        <h3>3.5. Truy cập trang đăng nhập, kiểm tra giao diện</h3>
+        <pre><button class="copy">Copy</button><code>http://apps.local.openedx.io:1999/authn/login</code>
+</pre>
+        <p>
+          Sau khi giao diện thay đổi thành công, tiến hành mount với các repo
+          còn lại.
+        </p>
         <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
       </main>
     </div>

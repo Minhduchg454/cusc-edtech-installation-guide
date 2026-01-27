@@ -330,3 +330,10 @@ img {
 .remove {
   text-decoration: line-through !important;
 }
+
+blockquote {
+  border-left: 4px solid var(--accent);
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  background: var(--callout-bg);
+}
