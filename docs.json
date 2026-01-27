@@ -2,16 +2,16 @@
   "title": "Danh sách tài liệu",
   "items": [
     {
-      "href": "/pages/introduction.html",
-      "text": "0. Yêu cầu hệ thống",
-      "tag": "Introduction",
-      "description": "Yêu cầu hệ thống"
-    },
-    {
       "href": "/pages/access_platform.html",
-      "text": "1. Hướng dẫn truy cập nền tảng(local)",
+      "text": "0. Hướng dẫn truy cập nền tảng(local)",
       "tag": ["Setup", "Tutor"],
       "description": "Truy cập nền tảng local thông qua IP nội bộ mạng."
+    },
+    {
+      "href": "/pages/introduction.html",
+      "text": "1. Yêu cầu hệ thống",
+      "tag": "Introduction",
+      "description": "Yêu cầu hệ thống"
     },
     {
       "href": "/pages/tutor-setup.html",
@@ -66,7 +66,7 @@
       "href": "/pages/cusc_edx_config.html",
       "text": "10. Cài đặt plugin cusc edx config",
       "tag": ["LMS", "Ecommerce"],
-      "description": "Cài đặt các biến ENV và các cài dặt khác."
+      "description": "Cài đặt các biến ENV và các cài đặt khác."
     },
     {
       "href": "payment-api-config.html",
@@ -78,7 +78,7 @@
       "href": "/pages/node_payment_demo.html",
       "text": "12. Cài đặt hệ thống thanh toán demo",
       "tag": ["payment"],
-      "description": "Cài đặt hệ thống thanh toán"
+      "description": "Hướng dẫn cài đặt hệ thống thanh toán demo"
     },
     {
       "href": "/pages/payment-api.html",
