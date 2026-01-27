@@ -88,7 +88,7 @@
     },
     {
       "href": "/pages/https.html",
-      "text": "13. Cấu hình HTTPS với chứng chỉ tự ký (self-signed)",
+      "text": "14. Cấu hình HTTPS với chứng chỉ tự ký (self-signed)",
       "tag": ["Security", "HTTPS"],
       "description": "Hướng dẫn cấu hình HTTPS cho Tutor Open edX sử dụng chứng chỉ tự ký."
     }
