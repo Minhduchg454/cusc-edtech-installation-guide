@@ -79,6 +79,12 @@
       "text": "12. Cài đặt & Gỡ plugin",
       "tag": ["plugin"],
       "description": "Quy trình đầy đủ: bind mã nguồn vào container, cài package ở LMS/CMS xác nhận entry points & namespace URL; sau đó là kịch bản gỡ sạch."
+    },
+    {
+      "href": "/pages/https.html",
+      "text": "13. Cấu hình HTTPS với chứng chỉ tự ký (self-signed)",
+      "tag": ["Security", "HTTPS"],
+      "description": "Hướng dẫn cấu hình HTTPS cho Tutor Open edX sử dụng chứng chỉ tự ký."
     }
   ]
 }
