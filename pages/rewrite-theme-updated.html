@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hướng dẫn thiết lập & áp dụng theme trong Tutor</title>
     <link rel="stylesheet" href="../assets/layout.css" />
+    <link rel="stylesheet" href="../assets/pageCSS//rewrite-thêm-updated.css" />
   </head>
   <body>
     <div class="wrap">
@@ -60,36 +61,21 @@
         <hr />
 
         <h2 id="setup">Setup khung sườn</h2>
-        <p><strong>Đi tới thư mục themes của Open edX trong Tutor:</strong></p>
+        <p>Đi tới thư mục themes của Open edX trong Tutor:</p>
         <pre><button class="copy">Copy</button><code>cd $(tutor config printroot)/env/build/openedx/themes</code></pre>
 
-        <div class="callout">
-          <strong>Mẹo (tuỳ chọn):</strong> Cài
-          <code class="inline">nautilus</code> để mở giao diện quản lý file rồi
-          chạy:
-        </div>
+        <p>Clone repo theme mẫu từ GitHub:</p>
+        <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/tutor-edx-mytheme.git</code></pre>
+
+        <p>Mở thư mục hiện hành (Cài nautilus):</p>
         <pre><button class="copy">Copy</button><code>nautilus .</code></pre>
-
-        <p>
-          <strong
-            >Kiểm tra xem có thư mục <code class="inline">indigo</code> hay
-            chưa.</strong
-          >
-        </p>
-
-        <ol>
-          <li>
-            Clone repo theme mẫu từ GitHub:
-            <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/tutor-edx-mytheme.git</code></pre>
-          </li>
-        </ol>
 
         <hr />
         <h2 id="set-theme">Dev mount thẳng thư mục build của Tutor</h2>
         <p>Tạo (hoặc sửa):</p>
-        <pre><code>subl ~/.local/share/tutor/env/dev/docker-compose.override.yml</code></pre>
+        <pre><button class="copy">Copy</button><code>subl ~/.local/share/tutor/env/dev/docker-compose.override.yml</code></pre>
         <p>Thêm (hoặc sửa) đoạn sau trong file yml:</p>
-        <pre><code>services:
+        <pre><button class="copy">Copy</button><code>services:
   lms:
     volumes:
       - ~/.local/share/tutor/env/build/openedx/themes:/openedx/themes:rw
@@ -122,6 +108,43 @@
           dịch giao diện.
         </div>
 
+        <h2 id="trigger ui">Kích hoạt giao diện</h2>
+        <p>Mở thêm một tab terminal bên cạnh tab (tutor dev run) đang chạy</p>
+        <p>Di chuyển đến thư mục chứa theme custom</p>
+        <pre><button class="copy">Copy</button><code>cd ~/.local/share/tutor/env/build/openedx/themes/tutor-edx-mytheme/lms/static/sass/home</code></pre>
+        <p>Mở file _home.scss</p>
+        <pre><button class="copy">Copy</button><code>subl _home.scss
+</code></pre>
+        <p>Mở file -> bấm vào 1 khoản trống -> nhấn spacebar -> save file.</p>
+        <p>
+          Nếu thấy như log bên tab[terminal] đang chạy [tutor dev start] in log
+          ra như này là được:
+        </p>
+
+        <div class="callout">
+          watchthemes-1 | Done. watchthemes-1 | Generating missing right-to-left
+          CSS: watchthemes-1 | Source:
+          /openedx/themes/tutor-edx-mytheme/cms/static/css/bootstrap/studio-main.css
+          watchthemes-1 | Target:
+          /openedx/themes/tutor-edx-mytheme/cms/static/css/bootstrap/studio-main-rtl.css
+          watchthemes-1 | rtlcss: Warning! No config present, using defaults.
+          watchthemes-1 | Saving: watchthemes-1 |
+          /openedx/themes/tutor-edx-mytheme/cms/static/css/bootstrap/studio-main-rtl.css
+          watchthemes-1 | Generated. watchthemes-1 | Compiling themed CMS Sass
+          as overrides to CSS from previous step... watchthemes-1 | Source:
+          /openedx/themes/tutor-edx-mytheme/cms/static/sass watchthemes-1 |
+          Target: /openedx/themes/tutor-edx-mytheme/cms/static/css watchthemes-1
+          | Include paths: watchthemes-1 | common/static watchthemes-1 |
+          common/static/sass watchthemes-1 | node_modules/@edx watchthemes-1 |
+          node_modules watchthemes-1 | lms/static/sass/partials watchthemes-1 |
+          /openedx/themes/tutor-edx-mytheme/cms/static/sass/partials
+          watchthemes-1 | cms/static/sass/partials watchthemes-1 |
+          cms/static/sass watchthemes-1 | Files: watchthemes-1 | Done.
+          watchthemes-1 | Done compiling Sass for theme at
+          /openedx/themes/tutor-edx-mytheme! watchthemes-1 | watchthemes-1 |
+          Successfully compiled: watchthemes-1 | -
+          /openedx/themes/tutor-edx-mytheme
+        </div>
         <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
       </main>
     </div>
