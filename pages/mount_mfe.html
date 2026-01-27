@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hướng dẫn thiết lập & áp dụng theme trong Tutor</title>
+    <title>Hướng dẫn mount giao diện vào openEDX</title>
     <link rel="stylesheet" href="../assets/layout.css" />
     <link rel="stylesheet" href="../assets/pageCSS//rewrite-thêm-updated.css" />
   </head>
@@ -35,30 +35,18 @@
 
         <!-- ===== NỘI DUNG TRANG ===== -->
 
-        <h1 id="top">
-          DEV THEME — Hướng dẫn thiết lập & áp dụng theme trong Tutor
-        </h1>
+        <h1 id="top">Hướng dẫn mount giao diện vào openEDX</h1>
         <p class="muted">
-          Tài liệu này giữ nguyên giao diện/UX của bản gốc, nhưng nội dung đã
-          được rút gọn theo checklist bạn cung cấp để thao tác nhanh khi phát
-          triển theme trong môi trường <code class="inline">tutor dev</code>.
+          Hướng dẫn clone micro-frontend từ repo đã xây dựng sẳn.
         </p>
 
-        <hr />
-        <h2 id="setup">Yêu cầu</h2>
-        <ul>
-          <li>
-            Đã cài <a href="dev-setup.html">môi trường phát triển Tutor</a>.
-          </li>
-          <li>
-            Đã cài phần mềm quản lý file <strong>nautilus</strong> trên Ubuntu.
-          </li>
-          <li>
-            Đã cài phầm mềm editor <strong>subline text</strong> trên Ubuntu.
-          </li>
-        </ul>
-
-        <hr />
+        <h2 id="knowledge">Thông tin chung</h2>
+        <p>
+          OpenEdx cung cấp sẳn các micro-frontend (MFE) giúp tùy biến giao diện.
+          Truy cập vào kho repo của OpenEdx để tìm các MFE sẳn có và các MFE bắt
+          đầu với frontend-app
+        </p>
+        <pre><button class="copy">Copy</button><code>https://github.com/orgs/openedx/repositories?q=frontend-app</code></pre>
 
         <h2 id="setup">Setup khung sườn</h2>
         <p>Đi tới thư mục themes của Open edX trong Tutor:</p>

@@ -67,6 +67,12 @@
       "text": "11. Cài đặt & Gỡ plugin",
       "tag": ["plugin"],
       "description": "Quy trình đầy đủ: bind mã nguồn vào container, cài package ở LMS/CMS xác nhận entry points & namespace URL; sau đó là kịch bản gỡ sạch."
+    },
+    {
+      "href": "/pages/mount_mfe.html",
+      "text": "13. Hướng dẫn clone micro-frontend từ git",
+      "tag": ["plugin"],
+      "description": "Hướng dẫn clone micro-frontend từ git"
     }
   ]
 }
