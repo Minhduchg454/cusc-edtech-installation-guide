@@ -19,64 +19,70 @@
       "tag": ["Setup", "Tutor"],
       "description": "Chuẩn bị máy, Docker, và cài Tutor v20."
     },
+    {
+      "href": "/pages/openedx-routes.html",
+      "text": "3. Truy cập các đường dẫn trong openEDX",
+      "tag": ["Router"],
+      "description": "Cung cấp các đường dẫn truy cập hệ thống"
+    },
 
     {
       "href": "/pages/rewrite-theme-updated.html",
-      "text": "3. Cài đặt & setup custom theme",
+      "text": "4. Cài đặt & setup custom theme",
       "tag": ["Theme", "UI"],
       "description": "Tạo theme riêng, tùy biến Mako/SCSS/Paragon."
     },
     {
       "href": "/pages/mount_mfe.html",
-      "text": "4. Hướng dẫn clone micro-frontend từ git",
-      "tag": ["plugin"],
+      "text": "5. Hướng dẫn clone micro-frontend từ git",
+      "tag": ["plugin", "mfe"],
       "description": "Hướng dẫn clone micro-frontend từ git"
     },
     {
       "href": "google-tpa.html",
-      "text": "5. Bật đăng nhập Google (TPA)",
+      "text": "6. Bật đăng nhập Google (TPA)",
       "tag": ["Auth", "TPA"],
       "description": "Cấu hình đăng nhập Google cho Open edX."
     },
     {
       "href": "/pages/course-creator.html",
-      "text": "6. Bật Course Creation Group (Local)",
+      "text": "7. Bật Course Creation Group (Local)",
       "tag": "Admin",
       "description": "Cấp quyền tạo khóa học trong môi trường local."
     },
     {
       "href": "/pages/plugin-flags.html",
-      "text": "7. Tutor Open edX — Danh sách plugin & cờ",
+      "text": "8. Tutor Open edX — Danh sách plugin & cờ",
       "tag": "Reference",
       "description": "Tổng hợp plugin/cờ cấu hình thường dùng."
     },
     {
       "href": "/pages/increment_upload_limit.html",
-      "text": "8. Tăng giới hạn upload trong Studio",
+      "text": "9. Tăng giới hạn upload trong Studio",
       "tag": "Studio",
       "description": "Tăng max_size upload qua Caddy & Django."
     },
     {
       "href": "/pages/cusc_edx_config.html",
-      "text": "9. Cài đặt plugin cusc edx config",
+      "text": "10. Cài đặt plugin cusc edx config",
       "tag": ["LMS", "Ecommerce"],
       "description": "Cài đặt các biến ENV và các cài dặt khác."
     },
     {
       "href": "payment-api-config.html",
-      "text": "10. Cài đặt cấu hình cổng thanh toán",
+      "text": "11. Cài đặt cấu hình cổng thanh toán",
       "tag": ["LMS", "Ecommerce"],
       "description": "Cài đặt cấu hình cho cổng thanh toán bên thứ ba."
     },
     {
       "href": "/pages/payment-api.html",
-      "text": "11. Các endpoint api",
+      "text": "12. Các endpoint api",
       "tag": ["LMS", "Ecommerce"],
       "description": "Thông tin các endpoint trong cusc_edx_api"
     },
     {
       "href": "/pages/dev-plugin.html",
-      "text": "12. Cài đặt & Gỡ plugin",
+      "text": "13. Cài đặt & Gỡ plugin",
       "tag": ["plugin"],
       "description": "Quy trình đầy đủ: bind mã nguồn vào container, cài package ở LMS/CMS xác nhận entry points & namespace URL; sau đó là kịch bản gỡ sạch."
     }
