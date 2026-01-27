@@ -34,18 +34,35 @@
         <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
 
         <!-- ===== NỘI DUNG TRANG ===== -->
-        <h1 id="top">Dev Setup — Cài đặt Tutor Open edX từ đầu</h1>
+       <h1 id="top">Dev Setup — Cài đặt Tutor Open edX từ đầu</h1>
         <p class="muted">
-          Lộ trình <strong>ít lỗi nhất</strong> cho Ubuntu (WSL2 tương tự): dùng
-          <strong>virtualenv</strong>, kiểm tra <strong>Docker</strong>, cấu
-          hình <strong>hosts</strong>, <strong>launch</strong> Local, chạy
-          <strong>migrations</strong>, tạo <strong>admin</strong>, bật
-          <strong>Dev</strong> (build <code class="inline">openedx-dev</code>) &
-          chèn <strong>kỳ vọng hiển thị</strong> sau mỗi bước.
+          Lộ trình <strong>ít lỗi nhất</strong> cho Ubuntu (WSL2 tương tự): cài đặt <strong>Docker Engine</strong>, dùng
+          <strong>virtualenv</strong>, cấu hình <strong>hosts</strong>, <strong>launch</strong> Local, tạo <strong>admin</strong>, bật
+          <strong>Dev</strong> & chèn <strong>kỳ vọng hiển thị</strong> sau mỗi bước.
         </p>
 
         <hr />
-        <h2 id="prereq">1. Yêu cầu hệ thống</h2>
+        <h2 id="install-docker">1. Cài đặt Docker (Cho Máy Ảo Ubuntu)</h2>
+        <p>Nếu máy ảo chưa có Docker, hãy chạy các lệnh sau để cài đặt bản Engine chính thức:</p>
+        <pre><button class="copy">Copy</button><code># Cập nhật và cài đặt các gói hỗ trợ
+sudo apt update && sudo apt install -y ca-certificates curl gnupg lsb-release
+
+# Thêm khóa GPG chính thức của Docker
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Thiết lập kho lưu trữ (repository)
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Cài đặt Docker Engine & Docker Compose
+sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Cấp quyền cho user (không cần dùng sudo mỗi lần gọi docker)
+sudo usermod -aG docker $USER
+newgrp docker</code></pre>
+
+        <h2 id="prereq">2. Kiểm tra yêu cầu hệ thống</h2>
         <pre><button class="copy">Copy</button><code>docker --version
 docker compose version
 python3 --version
@@ -58,12 +75,10 @@ Python 3.11.x
 ...</code></pre>
         </blockquote>
         <div class="callout">
-          <strong>Lưu ý:</strong> Nếu từng bị
-          <code class="inline">getcwd() failed</code>, hãy
-          <code class="inline">cd ~</code> trước khi cài đặt.
+          <strong>Lưu ý quan trọng:</strong> Sau khi chạy lệnh <code>usermod</code>, nếu không thể kết nối docker socket, ông chủ hãy khởi động lại máy ảo (reboot).
         </div>
 
-        <h2 id="venv">2. Tạo virtualenv & cài Tutor (ổn định nhất)</h2>
+        <h2 id="venv">3. Tạo virtualenv & cài Tutor (ổn định nhất)</h2>
         <pre><button class="copy">Copy</button><code># Tạo venv riêng cho Tutor
 python3 -m venv ~/.venvs/tutor-20
 ~/.venvs/tutor-20/bin/pip install -U pip
