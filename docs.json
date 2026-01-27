@@ -75,20 +75,26 @@
       "description": "Cài đặt cấu hình cho cổng thanh toán bên thứ ba."
     },
     {
+      "href": "/pages/node_payment_demo.html",
+      "text": "12. Cài đặt hệ thống thanh toán demo",
+      "tag": ["payment"],
+      "description": "Cài đặt hệ thống thanh toán"
+    },
+    {
       "href": "/pages/payment-api.html",
-      "text": "12. Các endpoint api",
+      "text": "13. Các endpoint api",
       "tag": ["LMS", "Ecommerce"],
       "description": "Thông tin các endpoint trong cusc_edx_api"
     },
     {
       "href": "/pages/dev-plugin.html",
-      "text": "13. Cài đặt & Gỡ plugin",
+      "text": "14. Cài đặt & Gỡ plugin",
       "tag": ["plugin"],
       "description": "Quy trình đầy đủ: bind mã nguồn vào container, cài package ở LMS/CMS xác nhận entry points & namespace URL; sau đó là kịch bản gỡ sạch."
     },
     {
       "href": "/pages/https.html",
-      "text": "14. Cấu hình HTTPS với chứng chỉ tự ký (self-signed)",
+      "text": "15. Cấu hình HTTPS với chứng chỉ tự ký (self-signed)",
       "tag": ["Security", "HTTPS"],
       "description": "Hướng dẫn cấu hình HTTPS cho Tutor Open edX sử dụng chứng chỉ tự ký."
     }
