@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cấu hình HTTPS giả lập — mkcert & Tutor</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+    <link rel="stylesheet" href="../assets/pageCSS/tutor-setup.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <a href="/" class="toggle home-btn" style="font-size: small; text-decoration: none">🏠 Trang chủ</a>
+            <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          </div>
+          <h4>Đang xem: <code class="inline" id="current-page">HTTPS Setup</code></h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <h1 id="top">Cấu hình HTTPS giả lập (Local SSL)</h1>
+        <p class="muted">
+          Hướng dẫn sử dụng <strong>mkcert</strong> để tạo chứng chỉ SSL nội bộ và cấu hình Tutor "đánh lừa" hệ thống để chạy giao thức HTTPS như server thật.
+        </p>
+
+        <hr />
+
+        <h2 id="install-tools">1. Cài đặt công cụ hỗ trợ</h2>
+        <p>Cập nhật hệ thống và cài đặt <code>libnss3-tools</code> để quản lý trust store:</p>
+        <pre><button class="copy">Copy</button><code>sudo apt update
+sudo apt install libnss3-tools</code></pre>
+
+        <h2 id="setup-mkcert">2. Cài đặt mkcert</h2>
+        <p>Tải bản build sẵn từ GitHub, cấp quyền thực thi và đưa vào hệ thống:</p>
+        <pre><button class="copy">Copy</button><code>wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64
+chmod +x mkcert
+sudo cp mkcert /usr/local/bin/
+
+# Khởi tạo CA nội bộ
+mkcert -install</code></pre>
+        <blockquote>
+          Kỳ vọng hiển thị:
+          <pre><code>Created a new local CA 💥
+The local CA is now installed in the system trust store! ⚡️</code></pre>
+        </blockquote>
+
+        <h2 id="generate-certs">3. Tạo chứng chỉ cho Domains</h2>
+        <p>Tạo SSL cho các địa chỉ local cần thiết:</p>
+        <pre><button class="copy">Copy</button><code>mkcert local.openedx.io studio.local.openedx.io apps.local.openedx.io localhost 127.0.0.1</code></pre>
+        <div class="callout">
+          <strong>Kết quả:</strong> Ông chủ sẽ nhận được 2 file: <code>local.openedx.io+4.pem</code> (Certificate) và <code>local.openedx.io+4-key.pem</code> (Private Key).
+        </div>
+
+        <h2 id="tutor-trick">4. Cấu hình "Đánh lừa" Server (HTTPS Trick)</h2>
+        <p>Chạy lệnh sau để ép Tutor nhận cấu hình HTTPS và Proxy như môi trường Production thực thụ:</p>
+        <pre><button class="copy">Copy</button><code>tutor config save --set ENABLE_HTTPS=true --set WEB_PROXY=true</code></pre>
+
+        
+        <section>
+            <h2>5. Lấy chứng chỉ từ Ubuntu qua Windows</h2>
+            <div class="callout">
+                Để trình duyệt Windows nhận diện <strong>"Ổ khóa xanh"</strong>, ông chủ phải đưa file Root CA về máy thật.
+            </div>
+            <ol>
+                <li>
+                    <strong>Copy file từ WSL2 ra Windows:</strong> Chạy lệnh sau trong Terminal Ubuntu:
+                    <pre><code>cp $(mkcert -CAROOT)/rootCA.pem /mnt/c/Users/$USER/Downloads/rootCA.crt</code></pre>
+                    <p class="img-desc">File sẽ xuất hiện trong thư mục Downloads của Windows dưới tên <strong>rootCA.crt</strong>.</p>
+                </li>
+                <li>
+                    <strong>Cài đặt vào Windows Trust Store:</strong>
+                    <ul>
+                        <li>Chuột phải vào file <code>rootCA.crt</code> -> chọn <strong>Install Certificate</strong>.</li>
+                        <li>Chọn <strong>Local Machine</strong> -> <strong>Next</strong>.</li>
+                        <li>Chọn <strong>Place all certificates in the following store</strong>.</li>
+                        <li>Nhấn <strong>Browse</strong> và chọn <strong>Trusted Root Certification Authorities</strong>.</li>
+                    </ul>
+                    
+                    <p class="img-desc">Đây là bước quan trọng nhất để trình duyệt tin tưởng chứng chỉ nội bộ.</p>
+                </li>
+                <li>
+                    <strong>Hoàn tất:</strong> Khởi động lại trình duyệt (Chrome/Edge) và truy cập <a href="https://local.openedx.io" target="_blank">https://local.openedx.io</a>.
+                </li>
+            </ol>
+        </section>
+        <hr />
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>
