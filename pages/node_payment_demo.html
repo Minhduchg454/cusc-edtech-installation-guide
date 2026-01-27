@@ -36,7 +36,123 @@
 
         <!-- ===== NỘI DUNG TRANG ===== -->
         <h1 id="top">Cài đặt hệ thống thanh toán demo</h1>
+        <h2 id="require">Yêu cầu chung</h2>
+        <p>
+          Đã cài đặt
+          <a href="./cusc_edx_config.html">plugin cusc_edx_config</a>.
+        </p>
+        <p>
+          Đã tích hợp và test
+          <a href="./payment-api-config.html">API ping</a> từ host
+        </p>
+        <p>Đã tạo các khóa học mẫu.</p>
+        <p>Khởi chạy môi trường dev.</p>
 
+        <h2 id="create_course">1. Cài đặt tính phí cho khóa học</h2>
+        <p>Khỏi chạy tutor ở dev</p>
+        <pre><button class="copy">Copy</button><code>tutor dev start</code></pre>
+        <p>Vào trình duyệt và đăng nhập vào tài khoản admin theo đường dẫn</p>
+        <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/admin</code></pre>
+        <p>
+          Ở giao diện quản lý truy cập mục: course_mode -> coursemode -> add
+        </p>
+        <pre><button class="copy">Copy</button><code> http://local.openedx.io:8000/admin/course_modes/coursemode/add/</code></pre>
+        <p>
+          Ở ô nhập Course, nhập id khóa học hoặc click chọn icon 🔍 để tìm khóa
+          học đã có trong hệ thống
+        </p>
+        <pre><code>#vidu
+Course: course-v1:HoiDanIT+Y0001+2025_T2 </code></pre>
+        <p>
+          Ở các ô Mode, Display Name, Price, Currency có thể nhập như mẫu sau
+        </p>
+        <pre><code>#vidu
+Mode: Verified
+Display Name: Khóa học trả phí
+Price: 500000
+Currency: VND </code></pre>
+
+        <p>Các ô khác tùy ý nhập.</p>
+        <p>Nhấn nút SAVE để tiến hành lưu cài đặt khóa học.</p>
+        <p>
+          Kiểm tra khóa học đã kích hoạt bán bằng cách vào trang chủ và xem khóa
+          học đó. Kiểm tra hiển nút "Mua khóa học" là ok.
+        </p>
+        <h2 id="install_payment_demo">2. Cài đặt payment demo</h2>
+        <p>
+          Mở tab terminal mới và di chuyển đến thư mục để chứa file (hoặc tạo
+          nếu chưa có với lệnh mkdir [đường dẫn thư mục])
+        </p>
+        <pre><button class="copy">Copy</button><code>cd /home/openedx/dev</code></pre>
+        <p>Clone repo về</p>
+        <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/node-payment-demo</code></pre>
+        <p>Di chuyển vào thư mục và cài đặt các thư viện</p>
+        <pre><button class="copy">Copy</button><code>cd node-payment-demo
+npm install
+</code></pre>
+        <p>Kiểm tra thiết lập CUSC_CHECKOUT_URL và CUSC_PAYMENT_API_TOKEN</p>
+        <pre><button class="copy">Copy</button><code>tutor config printvalue CUSC_CHECKOUT_URL
+tutor config printvalue CUSC_PAYMENT_API_TOKEN
+</code></pre>
+        <blockquote>
+          Kỳ vọng hiển thị:
+          <pre><code
+            >openedx@nguyenhuuduc:~/dev$ 
+tutor config printvalue CUSC_CHECKOUT_URL
+tutor config printvalue CUSC_PAYMENT_API_TOKEN
+http://localhost:3000/checkout 
+123</code
+          ></pre>
+          Nếu kết quả không giống có thể thiết lập lại
+          <pre><button class="copy">Copy</button><code>tutor config save \
+--set CUSC_CHECKOUT_URL="http://localhost:3000/checkout" \
+--set CUSC_PAYMENT_API_TOKEN="123"
+</code></pre>
+        </blockquote>
+        <p>Tạo file .env từ .env.example:</p>
+        <pre><button class="copy">Copy</button><code>cp .env.example .env
+</code></pre>
+        <p>Mở .env và chỉnh</p>
+        <pre><button class="copy">Copy</button><code>nano .env
+</code></pre>
+        <p>
+          Dán nội dung vào (lưu ý khớp với port của CUSC_CHECKOUT_URL và
+          CUSC_PAYMENT_API_TOKEN ở trên)
+        </p>
+        <pre><button class="copy">Copy</button><code>LMS_BASE=http://local.openedx.io:8000
+CUSC_PAYMENT_API_TOKEN=123
+COURSE_MODE=verified
+PORT=3000
+</code></pre>
+        <blockquote>
+          <strong>Lưu ý:</strong>
+          nếu trong LMS bạn chưa set CUSC_PAYMENT_API_TOKEN, thì Node vẫn gửi
+          header nhưng phía LMS sẽ bỏ qua (chế độ DEV). Khi đưa lên môi trường
+          thật, bắt buộc phải đặt secret mạnh và giống nhau ở cả Node và LMS.
+        </blockquote>
+
+        <h2 id="run_demo">3. Chạy demo</h2>
+        <p>Tiến hành khởi chạy</p>
+        <pre><button class="copy">Copy</button><code>npm start</code></pre>
+        <p>Server sẽ chạy ở <code>http://localhost:3000</code>.</p>
+        <p>Có thể test nhanh bằng cách mở tab terminal mới và chạy lệnh</p>
+        <pre><button class="copy">Copy</button><code>curl http://localhost:3000/</code></pre>
+        <p>Nếu thấy "Node payment demo is running..." là OK.</p>
+
+        <h2 id="purchase">4. Kiểm thử mua khóa học</h2>
+        <p>
+          Đảm bảo đã khởi chạy tutor ở môi trường dev và khởi chạy
+          node_payment_demo.
+        </p>
+        <p>Mở trình duyệt và vào trang chủ.</p>
+        <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/</code></pre>
+
+        <p>
+          Đăng nhập vào hệ thống và chọn một khóa học có tính phí (đã thiết lập
+          trước đó).
+        </p>
+        <p>Bấm nút "Mua khóa học này".</p>
+        <p>Hệ thống chuyển sang cổng 3000 và báo mua khóa học thành công.</p>
         <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
       </main>
     </div>
