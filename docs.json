@@ -45,41 +45,42 @@
       "description": "Cấu hình đăng nhập Google cho Open edX."
     },
     {
-      "href": "/pages/course-creator.html",
-      "text": "7. Bật Course Creation Group (Local)",
-      "tag": "Admin",
-      "description": "Cấp quyền tạo khóa học trong môi trường local."
-    },
-    {
-      "href": "/pages/plugin-flags.html",
-      "text": "8. Tutor Open edX — Danh sách plugin & cờ",
-      "tag": "Reference",
-      "description": "Tổng hợp plugin/cờ cấu hình thường dùng."
-    },
-    {
-      "href": "/pages/increment_upload_limit.html",
-      "text": "9. Tăng giới hạn upload trong Studio",
-      "tag": "Studio",
-      "description": "Tăng max_size upload qua Caddy & Django."
-    },
-    {
       "href": "/pages/cusc_edx_config.html",
-      "text": "10. Cài đặt plugin cusc edx config",
+      "text": "7. Cài đặt plugin cusc edx config",
       "tag": ["LMS", "Ecommerce"],
       "description": "Cài đặt các biến ENV và các cài đặt khác."
     },
     {
       "href": "payment-api-config.html",
-      "text": "11. Cài đặt cấu hình cổng thanh toán",
+      "text": "8. Cài đặt cấu hình cổng thanh toán",
       "tag": ["LMS", "Ecommerce"],
       "description": "Cài đặt cấu hình cho cổng thanh toán bên thứ ba."
     },
     {
       "href": "/pages/node_payment_demo.html",
-      "text": "12. Cài đặt hệ thống thanh toán demo",
+      "text": "9. Cài đặt hệ thống thanh toán",
       "tag": ["payment"],
-      "description": "Hướng dẫn cài đặt hệ thống thanh toán demo"
+      "description": "Hướng dẫn cài đặt hệ thống thanh toán"
     },
+    {
+      "href": "/pages/course-creator.html",
+      "text": "10. Bật Course Creation Group (Local)",
+      "tag": "Admin",
+      "description": "Cấp quyền tạo khóa học trong môi trường local."
+    },
+    {
+      "href": "/pages/plugin-flags.html",
+      "text": "11. Tutor Open edX — Danh sách plugin & cờ",
+      "tag": "Reference",
+      "description": "Tổng hợp plugin/cờ cấu hình thường dùng."
+    },
+    {
+      "href": "/pages/increment_upload_limit.html",
+      "text": "12. Tăng giới hạn upload trong Studio",
+      "tag": "Studio",
+      "description": "Tăng max_size upload qua Caddy & Django."
+    },
+
     {
       "href": "/pages/payment-api.html",
       "text": "13. Các endpoint api",

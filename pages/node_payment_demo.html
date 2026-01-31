@@ -1,11 +1,9 @@
-<!-- Only copy, no edit -->
-
 <!doctype html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>template web</title>
+    <title>Dịch vụ thanh toán</title>
     <link rel="stylesheet" href="../assets/layout.css" />
   </head>
   <body>
@@ -30,129 +28,280 @@
         </aside>
       </div>
 
-      <!-- CONTENT RIÊNG TỪNG TRANG -->
+      <!-- CONTENT -->
       <main class="content markdown-body">
         <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
 
-        <!-- ===== NỘI DUNG TRANG ===== -->
-        <h1 id="top">Cài đặt hệ thống thanh toán demo</h1>
-        <h2 id="require">Yêu cầu chung</h2>
-        <p>
-          Đã cài đặt
-          <a href="./cusc_edx_config.html">plugin cusc_edx_config</a>.
-        </p>
-        <p>
-          Đã tích hợp và test
-          <a href="./payment-api-config.html">API ping</a> từ host
-        </p>
-        <p>Đã tạo các khóa học mẫu.</p>
-        <p>Khởi chạy môi trường dev.</p>
+        <h1 id="top">Tích hợp dịch vụ thanh toán</h1>
 
-        <h2 id="create_course">1. Cài đặt tính phí cho khóa học</h2>
-        <p>Khỏi chạy tutor ở dev</p>
-        <pre><button class="copy">Copy</button><code>tutor dev start</code></pre>
-        <p>Vào trình duyệt và đăng nhập vào tài khoản admin theo đường dẫn</p>
-        <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/admin</code></pre>
         <p>
-          Ở giao diện quản lý truy cập mục: course_mode -> coursemode -> add
+          Dịch vụ thanh toán độc lập dùng để tích hợp các cổng thanh toán bên
+          ngoài với Open edX (Tutor).<br />
+          Hệ thống bao gồm backend Node.js và frontend React, giao tiếp với LMS
+          thông qua API để tạo đơn hàng, xử lý thanh toán và ghi danh người học
+          sau khi giao dịch thành công.
         </p>
-        <pre><button class="copy">Copy</button><code> http://local.openedx.io:8000/admin/course_modes/coursemode/add/</code></pre>
-        <p>
-          Ở ô nhập Course, nhập id khóa học hoặc click chọn icon 🔍 để tìm khóa
-          học đã có trong hệ thống
-        </p>
-        <pre><code>#vidu
-Course: course-v1:HoiDanIT+Y0001+2025_T2 </code></pre>
-        <p>
-          Ở các ô Mode, Display Name, Price, Currency có thể nhập như mẫu sau
-        </p>
-        <pre><code>#vidu
-Mode: Verified
-Display Name: Khóa học trả phí
-Price: 500000
-Currency: VND </code></pre>
 
-        <p>Các ô khác tùy ý nhập.</p>
-        <p>Nhấn nút SAVE để tiến hành lưu cài đặt khóa học.</p>
-        <p>
-          Kiểm tra khóa học đã kích hoạt bán bằng cách vào trang chủ và xem khóa
-          học đó. Kiểm tra hiển nút "Mua khóa học" là ok.
-        </p>
-        <h2 id="install_payment_demo">2. Cài đặt payment demo</h2>
-        <p>
-          Mở tab terminal mới và di chuyển đến thư mục để chứa file (hoặc tạo
-          nếu chưa có với lệnh mkdir [đường dẫn thư mục])
-        </p>
+        <h2 id="features">Tính năng</h2>
+        <ul>
+          <li>Tạo và quản lý đơn thanh toán cho Open edX.</li>
+          <li>
+            Hỗ trợ các cổng thanh toán (môi trường Sandbox):
+            <ul>
+              <li>VNPay</li>
+              <li>PayPal</li>
+              <li>MoMo</li>
+            </ul>
+          </li>
+          <li>
+            Tự động cập nhật trạng thái đơn hàng và ghi danh khóa học sau khi
+            thanh toán thành công.
+          </li>
+          <li>Giao diện checkout đơn giản, dễ mở rộng.</li>
+          <li>Phù hợp cho môi trường phát triển, demo và nghiên cứu.</li>
+        </ul>
+
+        <h2 id="payment-flow">Luồng thanh toán</h2>
+        <ol>
+          <li>LMS chuyển hướng người dùng sang trang checkout</li>
+          <li>
+            Frontend gửi yêu cầu tới backend để:
+            <ul>
+              <li>Tạo đơn hàng trong Open edX</li>
+              <li>Khởi tạo thanh toán với cổng được chọn</li>
+            </ul>
+          </li>
+          <li>Người dùng hoàn tất thanh toán trên cổng bên thứ ba</li>
+          <li>Backend xử lý callback return/IPN</li>
+          <li>
+            Đơn hàng được đánh dấu đã thanh toán và người học được ghi danh vào
+            khóa học
+          </li>
+        </ol>
+
+        <h2 id="structure">Cấu trúc dự án</h2>
+        <pre><code>openedx-payment-service/
+├── backend/   (dịch vụ thanh toán Node.js)
+├── frontend/  (giao diện checkout React)
+└── README.md
+</code></pre>
+
+        <h2 id="requirements">Yêu cầu</h2>
+        <ul>
+          <li>Node.js ≥ 18</li>
+          <li>npm</li>
+          <li>Tutor (Open edX Devstack)</li>
+          <li>
+            Đã cài plugin
+            <a
+              href="https://github.com/Minhduchg454/cusc_edx_config.git"
+              target="_blank"
+              >cusc_edx_config</a
+            >
+          </li>
+          <li>
+            Đã tích hợp API và xác minh kết nối thành công thông qua host ping
+            với plugin cusc_edx_config.
+          </li>
+        </ul>
+
+        <h2 id="installation">Cài đặt</h2>
+        <h3 id="install-deps">0. Clone repo</h3>
+        <p>Tạo thư mục chứa mã nguồn</p>
         <pre><button class="copy">Copy</button><code>cd /home/openedx/dev</code></pre>
-        <p>Clone repo về</p>
-        <pre><button class="copy">Copy</button><code>git clone https://github.com/NekoNeko6996/node-payment-demo</code></pre>
-        <p>Di chuyển vào thư mục và cài đặt các thư viện</p>
-        <pre><button class="copy">Copy</button><code>cd node-payment-demo
-npm install
-</code></pre>
-        <p>Kiểm tra thiết lập CUSC_CHECKOUT_URL và CUSC_PAYMENT_API_TOKEN</p>
-        <pre><button class="copy">Copy</button><code>tutor config printvalue CUSC_CHECKOUT_URL
-tutor config printvalue CUSC_PAYMENT_API_TOKEN
-</code></pre>
-        <blockquote>
-          Kỳ vọng hiển thị:
-          <pre><code
-            >openedx@nguyenhuuduc:~/dev$ 
-tutor config printvalue CUSC_CHECKOUT_URL
-tutor config printvalue CUSC_PAYMENT_API_TOKEN
-http://localhost:3000/checkout 
-123</code
-          ></pre>
-          Nếu kết quả không giống có thể thiết lập lại
-          <pre><button class="copy">Copy</button><code>tutor config save \
---set CUSC_CHECKOUT_URL="http://localhost:3000/checkout" \
---set CUSC_PAYMENT_API_TOKEN="123"
-</code></pre>
-        </blockquote>
-        <p>Tạo file .env từ .env.example:</p>
-        <pre><button class="copy">Copy</button><code>cp .env.example .env
-</code></pre>
-        <p>Mở .env và chỉnh</p>
-        <pre><button class="copy">Copy</button><code>nano .env
-</code></pre>
+        <p>Clone mã nguồn từ GitHub</p>
+        <pre><button class="copy">Copy</button><code>git clone https://github.com/Minhduchg454/openedx-payment-service.git</code></pre>
+
+        <h3 id="install-deps">1. Cài đặt thư viện</h3>
+
+        <h4>Backend</h4>
+        <pre><button class="copy">Copy</button><code>cd backend
+npm i</code></pre>
+
+        <h4>Frontend</h4>
+        <pre><button class="copy">Copy</button><code>cd frontend
+npm i</code></pre>
+
+        <h3 id="backend-config">2. Cấu hình Backend</h3>
+
+        <h4>Tài khoản Sandbox &amp; thông tin xác thực</h4>
         <p>
-          Dán nội dung vào (lưu ý khớp với port của CUSC_CHECKOUT_URL và
-          CUSC_PAYMENT_API_TOKEN ở trên)
+          Dự án này sử dụng môi trường sandbox cho tất cả các cổng thanh toán
+          được hỗ trợ.<br />
+          Bạn phải tạo tài khoản developer/test cho từng nhà cung cấp để lấy các
+          thông tin xác thực cần thiết.
         </p>
-        <pre><button class="copy">Copy</button><code>LMS_BASE=http://local.openedx.io:8000
-CUSC_PAYMENT_API_TOKEN=123
-COURSE_MODE=verified
+
+        <h5>VNPay (sandbox)</h5>
+        <ul>
+          <li>
+            Đăng ký tài khoản merchant sandbox tại:
+            <ul>
+              <li>
+                <a href="https://sandbox.vnpayment.vn/devreg/" target="_blank">
+                  https://sandbox.vnpayment.vn/devreg/
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            Sau khi được phê duyệt, VNPay sẽ cung cấp:
+            <ul>
+              <li>VNP_TMN_CODE</li>
+              <li>VNP_HASH_SECRET</li>
+            </ul>
+          </li>
+          <li>Endpoint thanh toán sandbox đã được cấu hình sẵn</li>
+        </ul>
+
+        <h5>MoMo (sandbox)</h5>
+        <ul>
+          <li>
+            Mở repository git:
+            <ul>
+              <li>
+                <a
+                  href="https://github.com/momo-wallet/payment/blob/master/nodejs/CollectionLink.js"
+                  target="_blank"
+                >
+                  https://github.com/momo-wallet/payment/blob/master/nodejs/CollectionLink.js
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            Lấy thông tin xác thực:
+            <ul>
+              <li>MOMO_PARTNER_CODE</li>
+              <li>MOMO_ACCESS_KEY</li>
+              <li>MOMO_SECRET_KEY</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h5>PayPal (sandbox)</h5>
+        <ul>
+          <li>
+            Tạo tài khoản PayPal developer tại
+            <ul>
+              <li>
+                <a href="https://developer.paypal.com/home/" target="_blank">
+                  https://developer.paypal.com/home/
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            Tạo thông tin xác thực Sandbox REST API:
+            <ul>
+              <li>PAYPAL_CLIENT_ID</li>
+              <li>PAYPAL_CLIENT_SECRET</li>
+            </ul>
+          </li>
+          <li>
+            Sandbox của PayPal hỗ trợ đầy đủ luồng thanh toán mà không yêu cầu
+            pháp nhân doanh nghiệp.
+          </li>
+        </ul>
+
+        <h4>Biến môi trường</h4>
+        <p>Tạo file môi trường .env</p>
+        <pre><button class="copy">Copy</button><code>cd backend
+nano .env</code></pre>
+        <p>Điền nội dung vào file</p>
+        <pre><button class="copy">Copy</button><code># Server
 PORT=3000
+
+# Open edX LMS base URL
+LMS_BASE=http://local.openedx.io:8000
+
+# Shared secret giữa LMS và Payment Service
+CUSC_PAYMENT_API_TOKEN=123
+
+# Default course mode
+COURSE_MODE=verified
+
+# ======================
+# VNPay (Sandbox)
+# ======================
+VNP_TMN_CODE=
+VNP_HASH_SECRET=
+VNP_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+
+# Callback URLs
+# Khi test local, dùng ngrok:
+#   ngrok http 3000
+CLIENT_URL=http://localhost:3000
+VNP_RETURN_URL=http://localhost:3000/vnpay_return
+VNP_IPN_URL=http://localhost:3000/vnpay_ipn
+
+# ======================
+# PayPal (Sandbox)
+# ======================
+PAYPAL_CLIENT_ID=
+PAYPAL_CLIENT_SECRET=
+
+# ======================
+# MoMo (Sandbox)
+# ======================
+MOMO_PARTNER_CODE=MOMO
+MOMO_ACCESS_KEY=
+MOMO_SECRET_KEY=
 </code></pre>
+
         <blockquote>
-          <strong>Lưu ý:</strong>
-          nếu trong LMS bạn chưa set CUSC_PAYMENT_API_TOKEN, thì Node vẫn gửi
-          header nhưng phía LMS sẽ bỏ qua (chế độ DEV). Khi đưa lên môi trường
-          thật, bắt buộc phải đặt secret mạnh và giống nhau ở cả Node và LMS.
+          ⚠️ Không commit file <code>.env</code> lên repository.
         </blockquote>
 
-        <h2 id="run_demo">3. Chạy demo</h2>
-        <p>Tiến hành khởi chạy</p>
-        <pre><button class="copy">Copy</button><code>npm start</code></pre>
-        <p>Server sẽ chạy ở <code>http://localhost:3000</code>.</p>
-        <p>Có thể test nhanh bằng cách mở tab terminal mới và chạy lệnh</p>
-        <pre><button class="copy">Copy</button><code>curl http://localhost:3000/</code></pre>
-        <p>Nếu thấy "Node payment demo is running..." là OK.</p>
+        <h2 id="usage">Cách sử dụng</h2>
+        <ol>
+          <li>
+            Build frontend
+            <pre><button class="copy">Copy</button><code>cd frontend
+npm run build</code></pre>
+          </li>
+          <li>
+            Khởi động Open edX (Tutor), mở terminal mới
+            <pre><button class="copy">Copy</button><code>tutor dev start</code></pre>
+          </li>
+          <li>
+            Đảm bảo LMS truy cập được tại
+            <pre><code>http://local.openedx.io:8000</code></pre>
+          </li>
+          <li>
+            Khởi động backend thanh toán, mở terminal khác
+            <pre><button class="copy">Copy</button><code>cd backend
+npm start</code></pre>
+          </li>
+          <li>
+            Backend sẽ chạy tại
+            <pre><code>http://localhost:3000</code></pre>
+          </li>
+          <li>
+            Truy cập trang checkout thông qua redirect từ LMS hoặc URL test được
+            cấu hình trong Open edX
+          </li>
+        </ol>
 
-        <h2 id="purchase">4. Kiểm thử mua khóa học</h2>
-        <p>
-          Đảm bảo đã khởi chạy tutor ở môi trường dev và khởi chạy
-          node_payment_demo.
-        </p>
-        <p>Mở trình duyệt và vào trang chủ.</p>
-        <pre><button class="copy">Copy</button><code>http://local.openedx.io:8000/</code></pre>
+        <h2 id="sandbox-notes">Ghi chú Sandbox</h2>
+        <ul>
+          <li>PayPal: Sandbox đầy đủ tính năng, chỉ cần tài khoản test</li>
+          <li>
+            VNPay / MoMo: Thông tin sandbox phải được cung cấp bởi nhà cung cấp
+            thanh toán
+          </li>
+          <li>MoMo Production: Yêu cầu pháp nhân doanh nghiệp đã đăng ký</li>
+        </ul>
 
-        <p>
-          Đăng nhập vào hệ thống và chọn một khóa học có tính phí (đã thiết lập
-          trước đó).
-        </p>
-        <p>Bấm nút "Mua khóa học này".</p>
-        <p>Hệ thống chuyển sang cổng 3000 và báo mua khóa học thành công.</p>
+        <h2 id="audience">Đối tượng sử dụng</h2>
+        <ul>
+          <li>Lập trình viên Open edX</li>
+          <li>Kỹ sư EdTech</li>
+          <li>
+            Sinh viên hoặc nhà nghiên cứu tìm hiểu tích hợp cổng thanh toán
+          </li>
+        </ul>
+
         <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
       </main>
     </div>
