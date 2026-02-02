@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng dẫn xem CSDL Open edX</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <a href="/" class="toggle home-btn" style="font-size: small"
+              >🏠 Trang chủ</a
+            >
+            <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          </div>
+          <h4>
+            Đang xem:
+            <code class="inline" id="current-page">CSDL Open edX</code>
+          </h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <!-- CONTENT -->
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <h1 id="top">Hướng dẫn xem CSDL Open edX (Tutor)</h1>
+
+        <p>
+          Tài liệu này mô tả cách truy cập và kiểm tra cơ sở dữ liệu MySQL của
+          Open edX khi chạy bằng Tutor ở môi trường local.
+        </p>
+
+        <h2 id="method-1">Cách 1: Truy cập trực tiếp MySQL qua terminal</h2>
+
+        <h3>1. Khởi động Tutor</h3>
+        <pre><button class="copy">Copy</button><code>tutor local start -d</code></pre>
+
+        <h3>2. Lấy mật khẩu MySQL root</h3>
+        <pre><button class="copy">Copy</button><code>tutor config printvalue MYSQL_ROOT_PASSWORD</code></pre>
+        <p>
+          Ví dụ kết quả:
+          <code class="inline">r2q8wnn1</code><br />
+          (Mật khẩu có thể khác tùy máy)
+        </p>
+
+        <h3>3. Truy cập MySQL</h3>
+        <pre><button class="copy">Copy</button><code>tutor local exec mysql mysql -u root -pr2q8wnn1</code></pre>
+        <p>
+          Khi thấy prompt <code class="inline">mysql></code> là đã truy cập
+          thành công.
+        </p>
+
+        <h3>4. Hiển thị danh sách CSDL</h3>
+        <pre><button class="copy">Copy</button><code>SHOW DATABASES;</code></pre>
+
+        <h3>5. Truy cập CSDL Open edX</h3>
+        <pre><button class="copy">Copy</button><code>USE openedx;</code></pre>
+
+        <h3>6. Hiển thị các bảng</h3>
+        <pre><button class="copy">Copy</button><code>SHOW TABLES;</code></pre>
+
+        <h3>7. Thao tác với các bảng điển hình:</h3>
+        <p>Bảng thông tin người dùng</p>
+        <pre><button class="copy">Copy</button><code>DESCRIBE auth_user;
+SELECT * FROM auth_user;</code></pre>
+
+        <p>Bảng thông tin đơn hàng</p>
+        <pre><button class="copy">Copy</button><code>DESCRIBE cusc_ecommerce_order;
+SELECT * FROM cusc_ecommerce_order LIMIT 10;</code></pre>
+
+        <h2 id="method-2">
+          Cách 2: Truy cập MySQL qua giao diện Web (Adminer)
+        </h2>
+
+        <h3>1. Khởi động Tutor</h3>
+        <pre><button class="copy">Copy</button><code>tutor local start</code></pre>
+
+        <h3>2. Chạy Adminer</h3>
+        <pre><button class="copy">Copy</button><code>docker run --network tutor_local_default -p 8080:8080 adminer</code></pre>
+
+        <h3>3. Truy cập trình duyệt</h3>
+        <pre><button class="copy">Copy</button><code>http://localhost:8080/</code></pre>
+
+        <h3>4. Thông tin đăng nhập</h3>
+        <p>Vị trí file config chứa mật khẩu MYSQL_ROOT_PASSWORD:</p>
+        <pre><button class="copy">Copy</button><code>nano $(tutor config printroot)/config.yml</code></pre>
+
+        <p>Các thông tin đăng nhập</p>
+        <ul>
+          <li><strong>Server:</strong> tutor_local-mysql-1</li>
+          <li><strong>Username:</strong> root</li>
+          <li><strong>Password:</strong> MYSQL_ROOT_PASSWORD</li>
+          <li><strong>Database:</strong> openedx</li>
+        </ul>
+
+        <h2 id="tables">Các bảng quan trọng trong Open edX</h2>
+
+        <ul>
+          <li>
+            <strong>student_courseenrollment</strong><br />
+            Bảng ghi nhận đăng ký khóa học của người học
+          </li>
+          <li>
+            <strong>auth_user</strong><br />
+            Bảng thông tin người dùng
+          </li>
+          <li>
+            <strong>course_modes_coursemode</strong><br />
+            Bảng định nghĩa các chế độ khóa học (free / verified / paid)
+          </li>
+        </ul>
+
+        <p style="margin-top: 24px">
+          <a href="#top">▲ Lên đầu trang</a>
+        </p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

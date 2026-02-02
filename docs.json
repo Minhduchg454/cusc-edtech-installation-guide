@@ -63,39 +63,45 @@
       "description": "Hướng dẫn cài đặt hệ thống thanh toán"
     },
     {
+      "href": "/pages/access_database.html",
+      "text": "11. Truy cập cơ sở dữ liệu Open edX",
+      "tag": "database",
+      "description": "Hướng dẫn truy cập và kiểm tra cơ sở dữ liệu Open edX bằng MySQL và Adminer."
+    },
+    {
       "href": "/pages/course-creator.html",
-      "text": "10. Bật Course Creation Group (Local)",
+      "text": "12. Bật Course Creation Group (Local)",
       "tag": "Admin",
       "description": "Cấp quyền tạo khóa học trong môi trường local."
     },
     {
       "href": "/pages/plugin-flags.html",
-      "text": "11. Tutor Open edX — Danh sách plugin & cờ",
+      "text": "13. Tutor Open edX — Danh sách plugin & cờ",
       "tag": "Reference",
       "description": "Tổng hợp plugin/cờ cấu hình thường dùng."
     },
     {
       "href": "/pages/increment_upload_limit.html",
-      "text": "12. Tăng giới hạn upload trong Studio",
+      "text": "14. Tăng giới hạn upload trong Studio",
       "tag": "Studio",
       "description": "Tăng max_size upload qua Caddy & Django."
     },
 
     {
       "href": "/pages/payment-api.html",
-      "text": "13. Các endpoint api",
+      "text": "15. Các endpoint api",
       "tag": ["LMS", "Ecommerce"],
       "description": "Thông tin các endpoint trong cusc_edx_api"
     },
     {
       "href": "/pages/dev-plugin.html",
-      "text": "14. Cài đặt & Gỡ plugin",
+      "text": "16. Cài đặt & Gỡ plugin",
       "tag": ["plugin"],
       "description": "Quy trình đầy đủ: bind mã nguồn vào container, cài package ở LMS/CMS xác nhận entry points & namespace URL; sau đó là kịch bản gỡ sạch."
     },
     {
       "href": "/pages/https.html",
-      "text": "15. Cấu hình HTTPS với chứng chỉ tự ký (self-signed)",
+      "text": "17. Cấu hình HTTPS với chứng chỉ tự ký (self-signed)",
       "tag": ["Security", "HTTPS"],
       "description": "Hướng dẫn cấu hình HTTPS cho Tutor Open edX sử dụng chứng chỉ tự ký."
     }
