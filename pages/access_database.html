@@ -100,22 +100,69 @@ SELECT * FROM cusc_ecommerce_order LIMIT 10;</code></pre>
         </ul>
 
         <h2 id="tables">Các bảng quan trọng trong Open edX</h2>
+        <blockquote>
+          <strong>Mẹo tìm kiếm nhanh:</strong>
+          <p>
+            Khi truy cập cơ sở dữ liệu bằng <em>Cách 2 (giao diện web)</em>:
+          </p>
+          <p>1. Mở màn hình quản lý CSDL <code>openedx</code>.</p>
+          <p>
+            2. Sử dụng công cụ tìm kiếm của trình duyệt (<code>Ctrl + F</code>)
+            và nhập tên bảng cần tìm.
+          </p>
+        </blockquote>
 
+        <h3>Nhóm người dùng &amp; xác thực</h3>
         <ul>
-          <li>
-            <strong>student_courseenrollment</strong><br />
-            Bảng ghi nhận đăng ký khóa học của người học
-          </li>
           <li>
             <strong>auth_user</strong><br />
             Bảng thông tin người dùng
           </li>
           <li>
-            <strong>course_modes_coursemode</strong><br />
-            Bảng định nghĩa các chế độ khóa học (free / verified / paid)
+            <strong>auth_userprofile</strong><br />
+            Hồ sơ mở rộng của người dùng
+          </li>
+          <li>
+            <strong>auth_permission</strong><br />
+            Bảng phân quyền người dùng
           </li>
         </ul>
 
+        <h3>Nhóm khóa học &amp; cấu hình khóa học</h3>
+        <ul>
+          <li>
+            <strong>course_overviews_courseoverview</strong><br />
+            Danh sách và thông tin tổng quan các khóa học
+          </li>
+          <li>
+            <strong>course_modes_coursemode</strong><br />
+            Định nghĩa chế độ khóa học (free / verified / paid)
+          </li>
+        </ul>
+
+        <h3>Nhóm ghi danh &amp; tiến trình học tập</h3>
+        <ul>
+          <li>
+            <strong>student_courseenrollment</strong><br />
+            Ghi nhận đăng ký khóa học của người học
+          </li>
+          <li>
+            <strong>courseware_studentmodule</strong><br />
+            Lưu tiến độ học tập của người học
+          </li>
+          <li>
+            <strong>grades_persistentcoursegrade</strong><br />
+            Điểm tổng kết của người học trong khóa học
+          </li>
+        </ul>
+
+        <h3>Nhóm thương mại &amp; thanh toán</h3>
+        <ul>
+          <li>
+            <strong>cusc_ecommerce_order</strong><br />
+            Thông tin đơn hàng thanh toán
+          </li>
+        </ul>
         <p style="margin-top: 24px">
           <a href="#top">▲ Lên đầu trang</a>
         </p>
