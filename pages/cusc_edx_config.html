@@ -64,28 +64,26 @@ version: "1.0.0"
 
 config:
   defaults:
-    # Mặc định: đổi bằng `tutor config save --set CUSC_CHECKOUT_URL=...`
     CUSC_CHECKOUT_URL: "http://localhost:5000/checkout"
     CUSC_PAYMENT_API_TOKEN: ""
 
 patches:
-  # LMS: nhét biến vào cả common/dev/prod (dev là cái bạn đang chạy)
   openedx-lms-common-settings: |
-    # CUSC payment token dùng cho Node <-> LMS
-    # CUSC_PAYMENT_API_TOKEN = "]lThul5/$PIYVGDTBE;*rRxb3|Lc7o~,dhN;rbY6gpOGO!.ME3:$n+tI4&7HP7;"
-
     CUSC_PAYMENT_API_TOKEN = "{{ CUSC_PAYMENT_API_TOKEN | default('123456789') }}"
-
-    # === CUSC custom checkout URL for Node service === 
     CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
+    
+    # Ép dùng SMTP cho toàn bộ hệ thống
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
   openedx-lms-development-settings: |
     CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
+    
+    # Ghi đè cấu hình filebased mặc định của môi trường dev
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
   openedx-lms-production-settings: |
     CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
 
-  # (tuỳ chọn) CMS nếu cần
   openedx-cms-production-settings: |
     MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 512
     UPLOAD_CHUNK_SIZE_IN_MB = 50</code></pre>

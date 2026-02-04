@@ -59,7 +59,7 @@
         <div class="callout">
           Repo tham khảo:
           <code class="inline"
-            >https://github.com/Minhduchg454/cusc_edx_config.git</code
+            >https://github.com/Minhduchg454/cusc_edx_api.git</code
           >
         </div>
 
@@ -102,7 +102,7 @@
         <p>Chọn thư mục chưa plugin ở home/dev</p>
         <pre><button class="copy">Copy</button><code>mkdir /home/openedx/dev</code></pre>
         <p>Clone repo vào ổ cứng</p>
-        <pre><button class="copy">Copy</button><code>git clone https://github.com/Minhduchg454/cusc_edx_config</code></pre>
+        <pre><button class="copy">Copy</button><code>git clone https://github.com/Minhduchg454/cusc_edx_api</code></pre>
 
         <p>
           Mount vào container, ví dụ
@@ -147,6 +147,9 @@ entrypoints: {'cusc_edx_api': EntryPoint.parse('cusc_edx_api = cusc_edx_api.apps
         </h3>
         <pre><button class="copy">Copy</button><code>ROOT="$(tutor config printroot)"
 cd "$ROOT/env/apps/openedx/settings/lms"</code></pre>
+        <p>Mở development.py</p>
+        <pre><button class="copy">Copy</button><code>nano development.py</code></pre>
+        <p>Thêm nội dung bên dưới vào cuối file</p>
         <pre><button class="copy">Copy</button><code># Mở development.py và thêm cuối file:
 EXTRA_APPS_PATH = "/mnt/cusc_edx_api"  # path trong container
 if EXTRA_APPS_PATH not in sys.path:
@@ -297,7 +300,7 @@ tutor dev run lms ./manage.py lms cleanup_cusc_orders --ttl-seconds 600 --delete
         <pre><button class="copy">Copy</button><code># vị trí file config ở: $(tutor config printroot)
 # config.yml
 OPENEDX_EXTRA_PIP_REQUIREMENTS:
-  - git+https://github.com/NekoNeko6996/cusc_edx_api.git@v1.0.0#egg=cusc-edx-api</code></pre>
+  - git+https://github.com/Minhduchg454/cusc_edx_api.git#egg=cusc-edx-api</code></pre>
 
         <h3 id="prod-build">6.2) Áp dụng config & build lại image</h3>
         <pre><button class="copy">Copy</button><code>tutor config save
