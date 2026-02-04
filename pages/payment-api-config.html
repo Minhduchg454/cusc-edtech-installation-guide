@@ -147,6 +147,9 @@ entrypoints: {'cusc_edx_api': EntryPoint.parse('cusc_edx_api = cusc_edx_api.apps
         </h3>
         <pre><button class="copy">Copy</button><code>ROOT="$(tutor config printroot)"
 cd "$ROOT/env/apps/openedx/settings/lms"</code></pre>
+        <p>Mở development.py</p>
+        <pre><button class="copy">Copy</button><code>nano development.py</code></pre>
+        <p>Thêm nội dung bên dưới vào cuối file</p>
         <pre><button class="copy">Copy</button><code># Mở development.py và thêm cuối file:
 EXTRA_APPS_PATH = "/mnt/cusc_edx_api"  # path trong container
 if EXTRA_APPS_PATH not in sys.path:

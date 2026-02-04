@@ -64,38 +64,38 @@
     },
     {
       "href": "/pages/access_database.html",
-      "text": "11. Truy cập cơ sở dữ liệu Open edX",
+      "text": "10. Truy cập cơ sở dữ liệu Open edX",
       "tag": "database",
       "description": "Hướng dẫn truy cập và kiểm tra cơ sở dữ liệu Open edX bằng MySQL và Adminer."
     },
     {
       "href": "/pages/course-creator.html",
-      "text": "12. Bật Course Creation Group (Local)",
+      "text": "11. Bật Course Creation Group (Local)",
       "tag": "Admin",
       "description": "Cấp quyền tạo khóa học trong môi trường local."
     },
     {
       "href": "/pages/plugin-flags.html",
-      "text": "13. Tutor Open edX — Danh sách plugin & cờ",
+      "text": "12. Tutor Open edX — Danh sách plugin & cờ",
       "tag": "Reference",
       "description": "Tổng hợp plugin/cờ cấu hình thường dùng."
     },
     {
       "href": "/pages/increment_upload_limit.html",
-      "text": "14. Tăng giới hạn upload trong Studio",
+      "text": "13. Tăng giới hạn upload trong Studio",
       "tag": "Studio",
       "description": "Tăng max_size upload qua Caddy & Django."
     },
 
     {
       "href": "/pages/payment-api.html",
-      "text": "15. Các endpoint api",
+      "text": "14. Các endpoint api",
       "tag": ["LMS", "Ecommerce"],
       "description": "Thông tin các endpoint trong cusc_edx_api"
     },
     {
       "href": "/pages/dev-plugin.html",
-      "text": "16. Cài đặt & Gỡ plugin",
+      "text": "15. Cài đặt & Gỡ plugin",
       "tag": ["plugin"],
       "description": "Quy trình đầy đủ: bind mã nguồn vào container, cài package ở LMS/CMS xác nhận entry points & namespace URL; sau đó là kịch bản gỡ sạch."
     },
