@@ -59,6 +59,7 @@
           </li>
           <li>Giao diện checkout đơn giản, dễ mở rộng.</li>
           <li>Phù hợp cho môi trường phát triển, demo và nghiên cứu.</li>
+          <li>Gửi mail thông báo thông tin thanh toán và ghi danh khóa học.</li>
         </ul>
 
         <h2 id="payment-flow">Luồng thanh toán</h2>
@@ -77,6 +78,7 @@
             Đơn hàng được đánh dấu đã thanh toán và người học được ghi danh vào
             khóa học
           </li>
+          <li>Hệ thống gửi mail thông báo đến người dùng.</li>
         </ol>
 
         <h2 id="structure">Cấu trúc dự án</h2>
@@ -131,7 +133,7 @@ npm i</code></pre>
           thông tin xác thực cần thiết.
         </p>
 
-        <h5>VNPay (sandbox)</h5>
+        <p>VNPay (sandbox)</p>
         <ul>
           <li>
             Đăng ký tài khoản merchant sandbox tại:
@@ -153,7 +155,7 @@ npm i</code></pre>
           <li>Endpoint thanh toán sandbox đã được cấu hình sẵn</li>
         </ul>
 
-        <h5>MoMo (sandbox)</h5>
+        <p>MoMo (sandbox)</p>
         <ul>
           <li>
             Mở repository git:
@@ -178,7 +180,7 @@ npm i</code></pre>
           </li>
         </ul>
 
-        <h5>PayPal (sandbox)</h5>
+        <p>PayPal (sandbox)</p>
         <ul>
           <li>
             Tạo tài khoản PayPal developer tại
@@ -201,6 +203,31 @@ npm i</code></pre>
             Sandbox của PayPal hỗ trợ đầy đủ luồng thanh toán mà không yêu cầu
             pháp nhân doanh nghiệp.
           </li>
+        </ul>
+        <h5 id="check-api-token">Kiểm tra API Token hiện tại</h5>
+
+        <p>
+          Trước khi cấu hình <code>CUSC_PAYMENT_API_TOKEN</code>, cần kiểm tra
+          giá trị token hiện tại trong cấu hình Tutor.
+        </p>
+
+        <p>Thực hiện lệnh sau trong terminal:</p>
+
+        <pre><button class="copy">Copy</button><code>tutor config printvalue CUSC_PAYMENT_API_TOKEN</code></pre>
+
+        <p>
+          Nếu hệ thống đã được cấu hình trước đó, lệnh sẽ trả về giá trị token
+          hiện tại (Hiện tại là 123).
+        </p>
+
+        <p>
+          Trường hợp chưa có giá trị, bạn có thể tự đặt một token bí mật (ví dụ:
+          chuỗi ngẫu nhiên dài tối thiểu 16 ký tự) và đảm bảo:
+        </p>
+
+        <ul>
+          <li>Giá trị trong <code>.env</code> của backend trùng khớp.</li>
+          <li>Giá trị cấu hình trong Tutor trùng khớp.</li>
         </ul>
 
         <h4>Biến môi trường</h4>
@@ -251,8 +278,121 @@ MOMO_SECRET_KEY=
         <blockquote>
           ⚠️ Không commit file <code>.env</code> lên repository.
         </blockquote>
+        <h3 id="install-deps">3. Cấu hình Mail</h3>
+        <h4 id="mail-app-password">
+          3.1 Lấy App Password cho tài khoản hệ thống
+        </h4>
 
-        <h2 id="usage">Cách sử dụng</h2>
+        <p>
+          Hệ thống sử dụng Gmail SMTP để gửi email thông báo đơn hàng và ghi
+          danh khóa học.
+        </p>
+        <p>Để xác thực, cần tạo App Password (mật khẩu ứng dụng).</p>
+        <ol>
+          <li>
+            Truy cập:
+            <ul>
+              <li>
+                <a
+                  href="https://myaccount.google.com/apppasswords"
+                  target="_blank"
+                >
+                  https://myaccount.google.com/apppasswords
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>Đăng nhập tài khoản Google dùng làm email hệ thống.</li>
+          <li>Tạo mã đăng nhập mới (App Password).</li>
+          <li>Google sẽ cung cấp mã gồm 16 ký tự.</li>
+          <li>
+            Sau khi lấy mã, xóa toàn bộ khoảng trắng nếu có trước khi sử dụng.
+          </li>
+        </ol>
+
+        <blockquote>
+          ⚠️ Tài khoản phải bật xác minh 2 bước (2-Step Verification) mới tạo
+          được App Password.
+        </blockquote>
+
+        <h4 id="mail-config">3.2 Cấu hình SMTP cho Tutor (Open edX)</h4>
+
+        <p>
+          Ví dụ cấu hình với tài khoản:
+          <code class="inline">taolink14@gmail.com</code>
+        </p>
+
+        <p>Thực hiện lệnh sau trên terminal:</p>
+
+        <pre><button class="copy">Copy</button><code>tutor config save \
+  --set SMTP_HOST=smtp.gmail.com \
+  --set SMTP_PORT=587 \
+  --set SMTP_USE_TLS=true \
+  --set SMTP_USERNAME=taolink14@gmail.com \
+  --set SMTP_PASSWORD=APP_PASSWORD_CUA_BAN \
+  --set DEFAULT_FROM_EMAIL="Open edX &lt;taolink14@gmail.com&gt;" \
+  --set CONTACT_EMAIL=taolink14@gmail.com</code></pre>
+
+        <p>Sau đó áp dụng cấu hình:</p>
+
+        <pre><button class="copy">Copy</button><code>tutor dev restart</code></pre>
+
+        <h4 id="mail-test-dev">3.3 Kiểm tra môi trường Dev</h4>
+
+        <h5>Kiểm tra kết nối plugin</h5>
+
+        <pre><button class="copy">Copy</button><code>curl -i http://localhost:8000/api/cusc-edx-api/ping/</code></pre>
+
+        <p>Kết quả mong đợi:</p>
+
+        <pre><code>HTTP/1.1 200 OK</code></pre>
+
+        <p>Body trả về:</p>
+
+        <pre><code>{ "status": "ok" }</code></pre>
+
+        <h5>Kiểm tra API gửi mail</h5>
+        <p>Người gửi: taolink14@gmail.com</p>
+        <p>Người nhận: minhduchg454@gmail.com</p>
+        <p>CUSC PAYMENT TOKEN: 123</p>
+
+        <pre><button class="copy">Copy</button><code>curl -i -X POST \
+     -H "Host: local.openedx.io" \
+     -H "X-CUSC-PAYMENT-TOKEN: 123" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "to": ["minhduchg454@gmail.com"],
+       "subject": "Đơn hàng đang chờ xử lý",
+       "template": "emails/order_pending.html",
+       "context": {"name": "Duc Nguyen"}
+     }' \
+     http://localhost:8000/api/cusc-edx-api/mailer/send/</code></pre>
+
+        <p>Kết quả mong đợi:</p>
+
+        <ul>
+          <li>Người nhận nhận được email.</li>
+          <li>Log trả về trạng thái:</li>
+        </ul>
+
+        <pre><code>HTTP/1.1 200 OK
+Content-Type: application/json</code></pre>
+
+        <p>Nếu trả về <code>200 OK</code> nhưng không nhận được mail:</p>
+
+        <ul>
+          <li>Kiểm tra lại App Password.</li>
+          <li>Đảm bảo đã bật xác minh 2 bước (2FA).</li>
+          <li>
+            Kiểm tra <code>SMTP_USERNAME</code> và
+            <code>DEFAULT_FROM_EMAIL</code> trùng khớp.
+          </li>
+          <li>Xem log LMS:</li>
+        </ul>
+
+        <pre><button class="copy">Copy</button><code>tutor dev logs -f lms</code></pre>
+
+        <h2 id="usage">Hướng dẫn vận hành</h2>
         <ol>
           <li>
             Build frontend
