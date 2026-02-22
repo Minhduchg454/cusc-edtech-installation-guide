@@ -51,7 +51,7 @@
       "description": "Cài đặt các biến ENV và các cài đặt khác."
     },
     {
-      "href": "payment-api-config.html",
+      "href": "/pages/payment-api-config.html",
       "text": "8. Cài đặt cấu hình cổng thanh toán",
       "tag": ["LMS", "Ecommerce"],
       "description": "Cài đặt cấu hình cho cổng thanh toán bên thứ ba."
