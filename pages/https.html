@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cấu hình HTTPS giả lập — mkcert & Tutor</title>
+    <title>Hướng dẫn tạo HTTPS Local cho Open edX</title>
     <link rel="stylesheet" href="../assets/layout.css" />
-    <link rel="stylesheet" href="../assets/pageCSS/tutor-setup.css" />
+    <link rel="stylesheet" href="../assets/pageCSS//rewrite-thêm-updated.css" />
   </head>
   <body>
     <div class="wrap">
@@ -16,7 +16,7 @@
             <a href="/" class="toggle home-btn" style="font-size: small; text-decoration: none">🏠 Trang chủ</a>
             <button id="themeToggle" class="toggle">🌙 Dark mode</button>
           </div>
-          <h4>Đang xem: <code class="inline" id="current-page">HTTPS Setup</code></h4>
+          <h4>Đang xem: <code class="inline" id="current-page">HTTPS Local</code></h4>
           <ul class="toc" id="toc"></ul>
         </aside>
       </div>
@@ -24,72 +24,80 @@
       <main class="content markdown-body">
         <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
 
-        <h1 id="top">Cấu hình HTTPS giả lập (Local SSL)</h1>
-        <p class="muted">
-          Hướng dẫn sử dụng <strong>mkcert</strong> để tạo chứng chỉ SSL nội bộ và cấu hình Tutor "đánh lừa" hệ thống để chạy giao thức HTTPS như server thật.
-        </p>
+        <h1 id="top">Hướng dẫn tạo HTTPS Local với mkcert</h1>
+        <p class="muted">Thiết lập chứng chỉ SSL giả lập cho các tên miền local.openedx.io</p>
 
-        <hr />
-
-        <h2 id="install-tools">1. Cài đặt công cụ hỗ trợ</h2>
-        <p>Cập nhật hệ thống và cài đặt <code>libnss3-tools</code> để quản lý trust store:</p>
-        <pre><button class="copy">Copy</button><code>sudo apt update
-sudo apt install libnss3-tools</code></pre>
-
-        <h2 id="setup-mkcert">2. Cài đặt mkcert</h2>
-        <p>Tải bản build sẵn từ GitHub, cấp quyền thực thi và đưa vào hệ thống:</p>
-        <pre><button class="copy">Copy</button><code>wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64
-chmod +x mkcert
-sudo cp mkcert /usr/local/bin/
-
-# Khởi tạo CA nội bộ
-mkcert -install</code></pre>
+        <h2 id="step1">1. Tải mkcert và tạo chứng chỉ</h2>
+        <p>Cài đặt công cụ và tạo chứng chỉ gộp cho tất cả các subdomain của Open edX.</p>
+        <pre><button class="copy">Copy</button><code>sudo apt update && sudo apt install mkcert libnss3-tools -y
+mkcert -install
+mkcert local.openedx.io *.local.openedx.io localhost 127.0.0.1</code></pre>
         <blockquote>
-          Kỳ vọng hiển thị:
-          <pre><code>Created a new local CA 💥
-The local CA is now installed in the system trust store! ⚡️</code></pre>
+          Lệnh trên sẽ tạo ra 2 file: <code>local.openedx.io+4.pem</code> (cert) và <code>local.openedx.io+4-key.pem</code> (key).
         </blockquote>
 
-        <h2 id="generate-certs">3. Tạo chứng chỉ cho Domains</h2>
-        <p>Tạo SSL cho các địa chỉ local cần thiết:</p>
-        <pre><button class="copy">Copy</button><code>mkcert local.openedx.io studio.local.openedx.io apps.local.openedx.io localhost 127.0.0.1</code></pre>
+        <h2 id="step2">2. Đưa chứng chỉ vào mục data</h2>
+        <p>Di chuyển và đổi tên chứng chỉ vào thư mục quản lý dữ liệu của Tutor.</p>
+        <pre><button class="copy">Copy</button><code>mkdir -p /home/duc/.local/share/tutor/data/certs
+mv local.openedx.io+4.pem /home/duc/.local/share/tutor/data/certs/cert.pem
+mv local.openedx.io+4-key.pem /home/duc/.local/share/tutor/data/certs/key.pem</code></pre>
+
+        <h2 id="step3">3. Sửa file Caddyfile</h2>
+        <p>Thêm dòng cấu hình <code>tls</code> vào đầu mỗi block tên miền trong cấu hình Caddy.</p>
+        <pre><button class="copy">Copy</button><code>nano /home/duc/.local/share/tutor/env/apps/caddy/Caddyfile</code></pre>
+        <p>Thêm dòng sau vào <strong>đầu tiên bên trong</strong> các dấu ngoặc nhọn <code>{ }</code>:</p>
+        <pre><code>tls /home/duc/.local/share/tutor/data/certs/cert.pem /home/duc/.local/share/tutor/data/certs/key.pem</code></pre>
+        
         <div class="callout">
-          <strong>Kết quả:</strong> Ông chủ sẽ nhận được 2 file: <code>local.openedx.io+4.pem</code> (Certificate) và <code>local.openedx.io+4-key.pem</code> (Private Key).
+          <strong>Ví dụ cấu hình:</strong>
+          <pre><code>local.openedx.io {
+    tls /home/duc/.local/share/tutor/data/certs/cert.pem /home/duc/.local/share/tutor/data/certs/key.pem
+    reverse_proxy lms:8000
+}</code></pre>
         </div>
 
-        <h2 id="tutor-trick">4. Cấu hình "Đánh lừa" Server (HTTPS Trick)</h2>
-        <p>Chạy lệnh sau để ép Tutor nhận cấu hình HTTPS và Proxy như môi trường Production thực thụ:</p>
-        <pre><button class="copy">Copy</button><code>tutor config save --set ENABLE_HTTPS=true --set WEB_PROXY=true</code></pre>
+        <h2 id="top">4: Nạp chứng chỉ vào trình duyệt</h1>
+        <p class="muted">Xác thực quyền tin tưởng cho Root CA để trình duyệt không báo lỗi bảo mật (ổ khóa đỏ).</p>
 
+        <h3 id="find-ca">4.1. Tìm vị trí file Root CA</h2>
+        <p>Trước tiên, ông chủ cần biết file chứng chỉ gốc đang nằm ở đâu trên máy tính.</p>
+        <pre><button class="copy">Copy</button><code>mkcert -CAROOT</code></pre>
+        <blockquote>
+          Kỳ vọng kết quả: <code>/home/duc/.local/share/mkcert</code>. File ông chủ cần lấy là <strong>rootCA.pem</strong>.
+        </blockquote>
+
+        <h3 id="chrome-setup">4.2. Cấu hình trên Chrome / Edge / Brave</h2>
+        <p>Các trình duyệt nhân Chromium cần được nạp thủ công nếu lệnh tự động bị từ chối.</p>
+        <ol>
+          <li>Truy cập đường dẫn: <code class="inline">chrome://settings/security</code></li>
+          <li>Chọn <strong>Manage certificates</strong> (Quản lý chứng chỉ) → <strong>Authorities</strong> (Cơ quan chứng nhận).</li>
+          <li>Nhấn <strong>Import</strong> và chọn file <code>rootCA.pem</code> đã tìm thấy ở bước trên.</li>
+        </ol>
+
+        <div class="callout">
+          <strong>Lưu ý quan trọng:</strong> Khi bảng thông báo hiện ra, ông chủ bắt buộc phải tích chọn vào ô: 
+          <br><em>"Trust this certificate for identifying websites"</em> (Tin tưởng chứng chỉ này để xác định các trang web).
+        </div>
+
+        <h3 id="firefox-setup">4.3. Cấu hình trên Firefox</h2>
+        <p>Firefox không dùng chung danh sách chứng chỉ với hệ thống, nên phải nạp riêng.</p>
+        <ul>
+          <li>Mở <strong>Settings</strong> → Gõ tìm kiếm "Cert" → Chọn <strong>View Certificates</strong>.</li>
+          <li>Tại tab <strong>Authorities</strong>, nhấn <strong>Import</strong>.</li>
+          <li>Chọn file <code>rootCA.pem</code> và tích chọn <em>"Trust this CA to identify websites"</em>.</li>
+        </ul>
+
+        <h3 id="verify">4.4. Kiểm tra kết quả</h2>
+        <h2 id="step5">5. Chạy lại dự án local</h2>
+        <p>Cập nhật file hosts và khởi động lại dịch vụ Caddy.</p>
+        <p>Sửa file hosts:</p>
+        <pre><button class="copy">Copy</button><code>sudo nano /etc/hosts</code></pre>
+        <p>Thêm dòng:</p>
+        <pre><code>127.0.0.1 local.openedx.io studio.local.openedx.io preview.local.openedx.io apps.local.openedx.io</code></pre>
         
-        <section>
-            <h2>5. Lấy chứng chỉ từ Ubuntu qua Windows</h2>
-            <div class="callout">
-                Để trình duyệt Windows nhận diện <strong>"Ổ khóa xanh"</strong>, ông chủ phải đưa file Root CA về máy thật.
-            </div>
-            <ol>
-                <li>
-                    <strong>Copy file từ WSL2 ra Windows:</strong> Chạy lệnh sau trong Terminal Ubuntu:
-                    <pre><code>cp $(mkcert -CAROOT)/rootCA.pem /mnt/c/Users/$USER/Downloads/rootCA.crt</code></pre>
-                    <p class="img-desc">File sẽ xuất hiện trong thư mục Downloads của Windows dưới tên <strong>rootCA.crt</strong>.</p>
-                </li>
-                <li>
-                    <strong>Cài đặt vào Windows Trust Store:</strong>
-                    <ul>
-                        <li>Chuột phải vào file <code>rootCA.crt</code> -> chọn <strong>Install Certificate</strong>.</li>
-                        <li>Chọn <strong>Local Machine</strong> -> <strong>Next</strong>.</li>
-                        <li>Chọn <strong>Place all certificates in the following store</strong>.</li>
-                        <li>Nhấn <strong>Browse</strong> và chọn <strong>Trusted Root Certification Authorities</strong>.</li>
-                    </ul>
-                    
-                    <p class="img-desc">Đây là bước quan trọng nhất để trình duyệt tin tưởng chứng chỉ nội bộ.</p>
-                </li>
-                <li>
-                    <strong>Hoàn tất:</strong> Khởi động lại trình duyệt (Chrome/Edge) và truy cập <a href="https://local.openedx.io" target="_blank">https://local.openedx.io</a>.
-                </li>
-            </ol>
-        </section>
-        <hr />
+        <p>Khởi động lại Caddy:</p>
+        <pre><button class="copy">Copy</button><code>tutor local restart caddy</code></pre>
+
         <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
       </main>
     </div>
