@@ -1,109 +1,113 @@
 {
-  "title": "Danh sách tài liệu",
+  "title": "Danh sách tài liệu hướng dẫn Open edX",
   "items": [
     {
       "href": "/pages/access_platform.html",
-      "text": "0. Hướng dẫn truy cập nền tảng(local)",
+      "text": "0. Hướng dẫn truy cập nền tảng",
       "tag": ["Setup", "Tutor"],
-      "description": "Truy cập nền tảng local thông qua IP nội bộ mạng."
+      "description": "Các bước cơ bản để truy cập hệ thống thông qua địa chỉ IP nội bộ trong mạng LAN."
     },
     {
       "href": "/pages/introduction.html",
-      "text": "1. Yêu cầu hệ thống",
+      "text": "1. Tổng quan & Yêu cầu hệ thống",
       "tag": "Introduction",
-      "description": "Yêu cầu hệ thống"
+      "description": "Thông số phần cứng và phần mềm cần thiết để triển khai nền tảng ổn định."
     },
     {
       "href": "/pages/tutor-setup.html",
-      "text": "2. Cài đặt môi trường Tutor",
+      "text": "2. Thiết lập môi trường Tutor",
       "tag": ["Setup", "Tutor"],
-      "description": "Chuẩn bị máy, Docker, và cài Tutor v20."
+      "description": "Hướng dẫn cài đặt Docker, môi trường Python và triển khai Tutor phiên bản v20."
     },
     {
       "href": "/pages/openedx-routes.html",
-      "text": "3. Truy cập các đường dẫn trong openEDX",
+      "text": "3. Danh mục các đường dẫn hệ thống",
       "tag": ["Router"],
-      "description": "Cung cấp các đường dẫn truy cập hệ thống"
+      "description": "Tổng hợp các URL quản trị và vận hành quan trọng trong Open edX (LMS, CMS, Admin)."
     },
-
     {
       "href": "/pages/rewrite-theme-updated.html",
-      "text": "4. Cài đặt & setup custom theme",
+      "text": "4. Tùy biến giao diện (Custom Theme)",
       "tag": ["Theme", "UI"],
-      "description": "Tạo theme riêng, tùy biến Mako/SCSS/Paragon."
+      "description": "Quy trình xây dựng giao diện riêng bằng cách can thiệp vào Mako templates, SCSS và Paragon."
     },
     {
       "href": "/pages/mount_mfe.html",
-      "text": "5. Hướng dẫn clone micro-frontend từ git",
+      "text": "5. Quản lý Micro-Frontend (MFE) từ Git",
       "tag": ["plugin", "mfe"],
-      "description": "Hướng dẫn clone micro-frontend từ git"
+      "description": "Phương pháp clone, mount và phát triển các module MFE trực tiếp từ kho lưu trữ mã nguồn."
     },
     {
-      "href": "google-tpa.html",
-      "text": "6. Bật đăng nhập Google (TPA)",
+      "href": "/pages/google-tpa.html",
+      "text": "6. Tích hợp đăng nhập Google (OAuth2)",
       "tag": ["Auth", "TPA"],
-      "description": "Cấu hình đăng nhập Google cho Open edX."
+      "description": "Cấu hình Third Party Authentication để cho phép người dùng đăng nhập bằng tài khoản Google."
     },
     {
       "href": "/pages/cusc_edx_config.html",
-      "text": "7. Cài đặt plugin cusc edx config",
+      "text": "7. Cấu hình Plugin CUSC EdX Config",
       "tag": ["LMS", "Ecommerce"],
-      "description": "Cài đặt các biến ENV và các cài đặt khác."
+      "description": "Thiết lập các biến môi trường (ENV) và thông số kỹ thuật tối ưu cho hệ thống."
     },
     {
       "href": "/pages/payment-api-config.html",
-      "text": "8. Cài đặt cấu hình cổng thanh toán",
+      "text": "8. Cấu hình cổng thanh toán bên thứ ba",
       "tag": ["LMS", "Ecommerce"],
-      "description": "Cài đặt cấu hình cho cổng thanh toán bên thứ ba."
+      "description": "Thiết lập kết nối API và tham số bảo mật cho các đơn vị trung gian thanh toán."
     },
     {
-      "href": "/pages/node_payment_demo.html",
-      "text": "9. Cài đặt hệ thống thanh toán",
-      "tag": ["payment"],
-      "description": "Hướng dẫn cài đặt hệ thống thanh toán"
+      "href": "/pages/mfe_checkout_demo.html",
+      "text": "9. Triển khai MFE Checkout",
+      "tag": ["checkout", "MFE"],
+      "description": "Cài đặt và kiểm thử quy trình thanh toán trên giao diện Micro-Frontend mới."
+    },
+    {
+      "href": "/pages/mfe_payment_history.html",
+      "text": "10. Triển khai MFE Lịch sử giao dịch",
+      "tag": ["payment-history", "MFE"],
+      "description": "Tích hợp giao diện quản lý và theo dõi trạng thái đơn hàng dành cho học viên."
     },
     {
       "href": "/pages/access_database.html",
-      "text": "10. Truy cập cơ sở dữ liệu Open edX",
+      "text": "11. Quản trị cơ sở dữ liệu",
       "tag": "database",
-      "description": "Hướng dẫn truy cập và kiểm tra cơ sở dữ liệu Open edX bằng MySQL và Adminer."
+      "description": "Cách kết nối, truy vấn và sao lưu dữ liệu bằng MySQL Client và giao diện web Adminer."
     },
     {
       "href": "/pages/course-creator.html",
-      "text": "11. Bật Course Creation Group (Local)",
+      "text": "12. Phân quyền tạo khóa học (Course Creator)",
       "tag": "Admin",
-      "description": "Cấp quyền tạo khóa học trong môi trường local."
+      "description": "Cấu hình nhóm quyền cho phép người dùng có thể khởi tạo khóa học mới trên Studio."
     },
     {
       "href": "/pages/plugin-flags.html",
-      "text": "12. Tutor Open edX — Danh sách plugin & cờ",
+      "text": "13. Tra cứu Plugin & Cờ cấu hình",
       "tag": "Reference",
-      "description": "Tổng hợp plugin/cờ cấu hình thường dùng."
+      "description": "Bảng tổng hợp các lệnh và tham số cấu hình nâng cao dành cho Tutor Open edX."
     },
     {
       "href": "/pages/increment_upload_limit.html",
-      "text": "13. Tăng giới hạn upload trong Studio",
+      "text": "14. Mở rộng giới hạn tải lên (Upload Limit)",
       "tag": "Studio",
-      "description": "Tăng max_size upload qua Caddy & Django."
+      "description": "Điều chỉnh thông số dung lượng file tối đa qua cấu hình Caddy và Django Middleware."
     },
-
     {
       "href": "/pages/payment-api.html",
-      "text": "14. Các endpoint api",
+      "text": "15. Tài liệu API Thanh toán",
       "tag": ["LMS", "Ecommerce"],
-      "description": "Thông tin các endpoint trong cusc_edx_api"
+      "description": "Chi tiết các Endpoint API hỗ trợ tích hợp và truy xuất dữ liệu thanh toán."
     },
     {
       "href": "/pages/dev-plugin.html",
-      "text": "15. Cài đặt & Gỡ plugin",
+      "text": "16. Quản lý vòng đời Plugin",
       "tag": ["plugin"],
-      "description": "Quy trình đầy đủ: bind mã nguồn vào container, cài package ở LMS/CMS xác nhận entry points & namespace URL; sau đó là kịch bản gỡ sạch."
+      "description": "Quy trình cài đặt, bind mã nguồn để phát triển và gỡ bỏ hoàn toàn Plugin khỏi hệ thống."
     },
     {
       "href": "/pages/https.html",
-      "text": "17. Cấu hình HTTPS với chứng chỉ tự ký (self-signed)",
+      "text": "17. Bảo mật HTTPS với Self-signed Certificate",
       "tag": ["Security", "HTTPS"],
-      "description": "Hướng dẫn cấu hình HTTPS cho Tutor Open edX sử dụng chứng chỉ tự ký."
+      "description": "Hướng dẫn tạo và cấu hình chứng chỉ bảo mật nội bộ để chạy HTTPS trong môi trường phát triển."
     }
   ]
 }

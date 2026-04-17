@@ -42,7 +42,6 @@
           <code class="inline">CUSC_PAYMENT_API_TOKEN</code> (shared secret) và
           <code class="inline">CUSC_CHECKOUT_URL</code>
           <br />
-          (URL trang checkout Node). Không thêm container hay phụ thuộc mới.
         </p>
 
         <h2 id="place">1. Di chuyển đến thư mục chứa cấu hình plugins</h2>
@@ -62,27 +61,17 @@
         <pre><button class="copy">Copy</button><code>name: cusc_edx_config
 version: "1.0.0"
 
-config:
-  defaults:
-    CUSC_CHECKOUT_URL: "http://localhost:5000/checkout"
-    CUSC_PAYMENT_API_TOKEN: ""
-
 patches:
   openedx-lms-common-settings: |
-    CUSC_PAYMENT_API_TOKEN = "{{ CUSC_PAYMENT_API_TOKEN | default('123456789') }}"
-    CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
-    
-    # Ép dùng SMTP cho toàn bộ hệ thống
+    CUSC_PAYMENT_API_TOKEN = "123"
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
   openedx-lms-development-settings: |
-    CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
-    
-    # Ghi đè cấu hình filebased mặc định của môi trường dev
+    CUSC_CHECKOUT_URL = "http://apps.{{ LMS_HOST }}:2002/checkout/"
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
   openedx-lms-production-settings: |
-    CUSC_CHECKOUT_URL = "{{ CUSC_CHECKOUT_URL | default('http://localhost:3000/checkout') }}"
+    CUSC_CHECKOUT_URL = "http://apps.{{ LMS_HOST }}/checkout/"
 
   openedx-cms-production-settings: |
     MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 512
@@ -96,11 +85,7 @@ patches:
               để dịch vụ Node.js gọi API nội bộ LMS qua header
               <code class="inline">X-CUSC-PAYMENT-TOKEN</code>.
             </li>
-            <li>
-              <code class="inline">CUSC_CHECKOUT_URL</code>: URL trang thanh
-              toán (Node) để LMS/MFE có thể redirect người học (ví dụ:
-              <code class="inline">http://localhost:5000/checkout</code>).
-            </li>
+
             <li>
               <code class="inline">MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB</code> &
               <code class="inline">UPLOAD_CHUNK_SIZE_IN_MB</code>: giới hạn
@@ -125,15 +110,16 @@ tutor config save</code></pre>
         <h3>3.4 Thiết lập biến cấu hình (ví dụ DEV)</h3>
         <p>
           <span class="badge">Theo yêu cầu</span> Thiết lập URL checkout chạy ở
-          cổng <code class="inline">5000</code> và đặt token tạm:
+          cổng <code class="inline">2002</code> và đặt token tạm:
         </p>
         <pre><button class="copy">Copy</button><code>tutor config save \
-  --set CUSC_CHECKOUT_URL="http://localhost:5000/checkout" \
+  --set CUSC_CHECKOUT_URL="http://apps.local.openedx.io:2002/checkout/" \
   --set CUSC_PAYMENT_API_TOKEN="123"</code></pre>
         <p class="muted">
           Bạn có thể đổi lại tuỳ môi trường (prod staging...). Nếu không set,
           giá trị mặc định là
-          <code class="inline">http://localhost:3000/checkout</code>.
+          <code class="inline">http://apps.local.openedx.io:2002/checkout/</code
+          >.
         </p>
 
         <h3>3.5 Khởi động lại dịch vụ</h3>
@@ -200,31 +186,13 @@ tutor local run lms ./manage.py lms shell -c "from django.conf import settings; 
           </li>
         </ul>
 
-        <h2 id="nginx">6. Proxy/Nginx khuyến nghị (tuỳ chọn)</h2>
-        <p>
-          Nếu Node checkout chạy cổng 5000 trên cùng máy, có thể reverse-proxy
-          ra subpath/domain ổn định.
-        </p>
-        <pre><button class="copy">Copy</button><code># NGINX ví dụ
-location /checkout/ {
-  proxy_pass http://127.0.0.1:5000/checkout/;
-  proxy_set_header Host $host;
-  proxy_set_header X-Forwarded-Proto $scheme;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-}</code></pre>
-        <p class="muted">
-          Giữ <code class="inline">CUSC_CHECKOUT_URL</code> trỏ đến URL public
-          tương ứng (vd.
-          <code class="inline">https://apps.local.openedx.io/checkout</code>).
-        </p>
-
         <h2 id="rollback">7. Rollback/Gỡ plugin</h2>
         <pre><button class="copy">Copy</button><code>tutor plugins disable cusc_edx_config
 tutor config save
 # Khởi động lại dịch vụ
 tutor local restart lms cms</code></pre>
 
-        <h2 id="faq">8. FAQ nhanh</h2>
+        <h2 id="faq">7. FAQ nhanh</h2>
         <ul>
           <li>
             <strong>Có cần build image?</strong> Thường là <em>không</em>.

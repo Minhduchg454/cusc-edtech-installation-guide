@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng dẫn cài đặt Payment History MFE</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <a
+              href="/"
+              class="toggle home-btn"
+              style="font-size: small; text-decoration: none"
+              >🏠 Trang chủ</a
+            >
+            <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          </div>
+          <h4>
+            Đang xem:
+            <code class="inline" id="current-page">Payment History MFE</code>
+          </h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <h1 id="top">
+          Tạo trang theo dõi lịch sử thanh toán:
+          <code class="inline">Payment History MFE</code>
+        </h1>
+        <p class="muted">
+          Hướng dẫn tích hợp Micro-frontend Lịch sử thanh toán vào hệ thống
+          Tutor Open edX, hỗ trợ theo dõi các giao dịch đã thực hiện.
+          <br />
+        </p>
+
+        <h2 id="clone-repo">1. Clone repo và cài đặt thư viện</h2>
+        <p>Di chuyển đến thư mục làm việc của frontend và tải mã nguồn:</p>
+        <pre><button class="copy">Copy</button><code>cd ~/dev-frontend
+# Clone repository
+git clone https://github.com/Minhduchg454/frontend-app-payment-history.git
+</code></pre>
+        <p>Cài đặt các thư viện phụ thuộc:</p>
+        <pre><button class="copy">Copy</button><code>cd frontend-app-payment-history
+npm i</code></pre>
+
+        <h2 id="mount-tutor">2. Mount thư mục vào nền tảng Tutor</h2>
+        <p>
+          Thực hiện mount để Tutor ưu tiên sử dụng mã nguồn tại máy (local
+          development):
+        </p>
+        <pre><button class="copy">Copy</button><code>cd ..
+tutor mounts add ./frontend-app-payment-history</code></pre>
+
+        <h2 id="create-plugin">3. Tạo Plugin khai báo cho Payment History</h2>
+        <p>
+          Di chuyển đến thư mục chứa các plugins của Tutor và tạo file khai báo:
+        </p>
+        <pre><button class="copy">Copy</button><code>cd "$(tutor plugins printroot)"
+nano payment_history.py</code></pre>
+
+        <p>Dán nội dung cấu hình Python sau vào file:</p>
+        <pre><button class="copy">Copy</button><code>from tutormfe.hooks import MFE_APPS
+from tutor import hooks
+
+@MFE_APPS.add()
+def add_payment_history(mfes):
+    mfes["payment-history"] = {
+        "repository": "https://github.com/Minhduchg454/frontend-app-payment-history.git",
+        "port": 2001,
+    }
+    return mfes
+
+# Cấu hình cho môi trường Production (Common)
+hooks.Filters.ENV_PATCHES.add_item(
+    (
+        "mfe-lms-common-settings",
+        """
+MFE_CONFIG["PAYMENT_HISTORY_URL"] = "http://apps.{{ LMS_HOST }}/payment-history/"
+"""
+    )
+)
+
+# Cấu hình cho môi trường Development (Port 2001)
+hooks.Filters.ENV_PATCHES.add_item(
+    (
+        "mfe-lms-development-settings",
+        """
+MFE_CONFIG["PAYMENT_HISTORY_URL"] = "http://apps.{{ LMS_HOST }}:2001/payment-history/"
+"""
+    )
+)</code></pre>
+
+        <div class="callout">
+          <strong>Lưu ý về cấu hình Port & Môi trường:</strong>
+          <ul>
+            <li>
+              <code class="inline">Port 2001</code> được sử dụng để phân biệt
+              với Learning MFE (2000) và Checkout MFE (2002).
+            </li>
+            <li>
+              Cấu hình này đã được thiết lập <strong>khớp hoàn toàn</strong> với
+              file <code class="inline">.env</code> trong repo, đảm bảo việc kết
+              nối giữa LMS và MFE không bị gián đoạn khi phát triển.
+            </li>
+          </ul>
+        </div>
+
+        <h2 id="enable-build">4. Kích hoạt và Build Image</h2>
+        <h3>4.1 Lưu và bật Plugin</h3>
+        <pre><button class="copy">Copy</button><code>tutor config save
+tutor plugins enable payment_history</code></pre>
+
+        <h3>4.2 Build lại MFE Image tổng quát</h3>
+        <p>
+          Cần thiết để Tutor đăng ký route
+          <code class="inline">/payment-history/</code> vào hệ thống:
+        </p>
+        <pre><button class="copy">Copy</button><code>tutor images build mfe</code></pre>
+
+        <h3>4.3 Build MFE Payment History (Dev Mode)</h3>
+        <pre><button class="copy">Copy</button><code>tutor images build payment_history-dev</code></pre>
+
+        <h2 id="start">5. Khởi chạy và Kiểm tra</h2>
+        <p>Khởi động môi trường phát triển:</p>
+        <pre><button class="copy">Copy</button><code>tutor dev start</code></pre>
+        <div class="callout ok">
+          <strong>Thông tin truy cập:</strong>
+          <ul>
+            <li>
+              URL Dev:
+              <code class="inline"
+                >http://apps.local.openedx.io:2001/payment-history/</code
+              >
+            </li>
+          </ul>
+        </div>
+
+        <h2 id="faq">6. FAQ nhanh</h2>
+        <ul>
+          <li>
+            <strong>Dữ liệu lấy từ đâu?</strong> MFE này gọi API từ LMS để lấy
+            danh sách các giao dịch liên quan đến user đang đăng nhập.
+          </li>
+          <li>
+            <strong>Lỗi CORS khi chạy Dev?</strong> Đảm bảo rằng bạn đã chạy
+            <code class="inline">tutor config save</code> sau khi bật plugin để
+            các cấu hình cho phép domain được cập nhật.
+          </li>
+        </ul>
+
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>
