@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng dẫn cài đặt trang thanh toán khóa học - Checkout MFE</title>
+    <link rel="stylesheet" href="../assets/layout.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="sidebar">
+        <aside id="global-toc-mount"></aside>
+        <aside>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <a
+              href="/"
+              class="toggle home-btn"
+              style="font-size: small; text-decoration: none"
+              >🏠 Trang chủ</a
+            >
+            <button id="themeToggle" class="toggle">🌙 Dark mode</button>
+          </div>
+          <h4>
+            Đang xem:
+            <code class="inline" id="current-page">Checkout MFE</code>
+          </h4>
+          <ul class="toc" id="toc"></ul>
+        </aside>
+      </div>
+
+      <main class="content markdown-body">
+        <button id="menuToggle" class="toggle menu-btn">☰ Mục lục</button>
+
+        <h1 id="top">
+          Tạo trang thanh toán khóa học:
+          <code class="inline">Checkout MFE</code>
+        </h1>
+        <p class="muted">
+          Hướng dẫn tích hợp Micro-frontend Checkout vào hệ thống Tutor Open
+          edX, hỗ trợ môi trường phát triển (Dev) và vận hành (Prod).
+          <br />
+        </p>
+
+        <h2 id="clone-repo">1. Clone repo và cài đặt thư viện</h2>
+        <p>Di chuyển đến thư mục làm việc của frontend và tải mã nguồn:</p>
+        <pre><button class="copy">Copy</button><code>cd ~/dev-frontend
+# Clone repository
+git clone https://github.com/Minhduchg454/frontend-app-checkout.git
+</code></pre>
+        <p>Cài đặt các thư viện phụ thuộc</p>
+        <pre><button class="copy">Copy</button><code>cd frontend-app-checkout
+npm i</code></pre>
+        <h2 id="config-payment-provider">
+          2. Cấu hình cổng thanh toán bên thứ ba
+        </h2>
+        <p>
+          Mã nguồn mặc định sẽ không đi kèm thông tin cấu hình nhạy cảm. Bạn cần
+          tự tạo file cấu hình local để ứng dụng có thể kết nối với các cổng
+          thanh toán.
+          <br />
+          <strong
+            >Vui lòng tự khởi tạo dựa trên hướng dẫn bên dưới hoặc liên hệ đơn
+            vị phát triển để xin file cấu hình mẫu nếu có.</strong
+          >
+        </p>
+
+        <h3>2.1 Tạo file cấu hình</h3>
+        <p>
+          Di chuyển vào thư mục config và tạo file
+          <code class="inline">paymentProviderConfig.js</code>:
+        </p>
+        <pre><button class="copy">Copy</button><code>cd ~/dev-frontend/frontend-app-checkout/src/config
+nano paymentProviderConfig.js</code></pre>
+
+        <p>
+          Dán nội dung mẫu bên dưới và thay thế các mã (key) tương ứng của bạn:
+        </p>
+        <pre><button class="copy">Copy</button><code>export const VNPAY_CONFIG = {
+  tmnCode: "YOUR_VNPAY_TMN_CODE",
+  hashSecret: "YOUR_VNPAY_HASH_SECRET",
+  url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+};
+
+export const MOMO_CONFIG = {
+  endpoint: "https://cors-anywhere.herokuapp.com/https://test-payment.momo.vn/v2/gateway/api/create",
+  partnerCode: "YOUR_MOMO_PARTNER_CODE",
+  accessKey: "YOUR_MOMO_ACCESS_KEY",
+  secretKey: "YOUR_MOMO_SECRET_KEY",
+};
+
+export const PAYPAL_CONFIG = {
+  PAYPAL_CLIENT_ID: "YOUR_PAYPAL_CLIENT_ID",
+  PAYPAL_CLIENT_SECRET: "YOUR_PAYPAL_CLIENT_SECRET",
+};</code></pre>
+
+        <div class="callout warn">
+          <strong>Lưu ý bảo mật:</strong> File này chứa thông tin bí mật (Secret
+          Key). Tuyệt đối <strong>không commit</strong> file này lên các kho lưu
+          trữ công khai (GitHub/GitLab).
+        </div>
+
+        <h3>2.2 Hướng dẫn lấy thông tin xác thực (Sandbox)</h3>
+        <p>
+          Vì dự án sử dụng môi trường thử nghiệm, bạn cần đăng ký tài khoản
+          Developer của từng nhà cung cấp:
+        </p>
+
+        <div style="margin-left: 20px">
+          <h4>A. VNPay (Sandbox)</h4>
+          <ul>
+            <li>
+              Đăng ký tài khoản Merchant tại:
+              <a href="https://sandbox.vnpayment.vn/devreg/" target="_blank"
+                >VNPay DevReg</a
+              >.
+            </li>
+            <li>
+              Sau khi duyệt, bạn sẽ nhận được
+              <code class="inline">VNP_TMN_CODE</code> và
+              <code class="inline">VNP_HASH_SECRET</code> qua email.
+            </li>
+          </ul>
+
+          <h4>B. MoMo (Sandbox)</h4>
+          <ul>
+            <li>
+              Truy cập tài liệu mẫu của MoMo tại:
+              <a
+                href="https://github.com/momo-wallet/payment/blob/master/nodejs/CollectionLink.js"
+                target="_blank"
+                >MoMo GitHub Sample</a
+              >.
+            </li>
+            <li>
+              Sao chép các giá trị Test:
+              <code class="inline">PARTNER_CODE</code>,
+              <code class="inline">ACCESS_KEY</code>, và
+              <code class="inline">SECRET_KEY</code>.
+            </li>
+          </ul>
+
+          <h4>C. PayPal (Sandbox)</h4>
+          <ul>
+            <li>
+              Truy cập
+              <a href="https://developer.paypal.com/home/" target="_blank"
+                >PayPal Developer Dashboard</a
+              >.
+            </li>
+            <li>
+              Vào mục <strong>Apps & Credentials</strong>, tạo một ứng dụng
+              "REST API" trong môi trường Sandbox để lấy
+              <code class="inline">Client ID</code> và
+              <code class="inline">Secret</code>.
+            </li>
+          </ul>
+        </div>
+
+        <h2 id="mount-tutor">3. Mount thư mục vào nền tảng Tutor</h2>
+        <p>
+          Thực hiện mount để Tutor ưu tiên sử dụng mã nguồn tại máy thay vì
+          trong image:
+        </p>
+        <pre><button class="copy">Copy</button><code>cd ..
+tutor mounts add ./frontend-app-checkout</code></pre>
+
+        <h2 id="create-plugin">4. Tạo Plugin khai báo cho Checkout</h2>
+        <p>Di chuyển đến thư mục chứa các plugins của Tutor:</p>
+        <pre><button class="copy">Copy</button><code>cd "$(tutor plugins printroot)"
+nano checkout.py</code></pre>
+
+        <p>Dán nội dung cấu hình Python sau vào file:</p>
+        <pre><button class="copy">Copy</button><code>from tutormfe.hooks import MFE_APPS
+from tutor import hooks
+
+@MFE_APPS.add()
+def add_payment_checkout(mfes):
+    mfes["checkout"] = {
+        "repository": "https://github.com/Minhduchg454/frontend-app-checkout.git",
+        "port": 2002,
+        "version": "main",
+    }
+    return mfes
+
+# Cấu hình cho môi trường Production (Common)
+hooks.Filters.ENV_PATCHES.add_item(
+    (
+        "mfe-lms-common-settings",
+        """
+MFE_CONFIG["PAYMENT_CHECKOUT_URL"] = "http://apps.{{ LMS_HOST }}/checkout/"
+"""
+    )
+)
+
+# Cấu hình cho môi trường Development (Port 2002)
+hooks.Filters.ENV_PATCHES.add_item(
+    (
+        "mfe-lms-development-settings",
+        """
+MFE_CONFIG["PAYMENT_CHECKOUT_URL"] = "http://apps.{{ LMS_HOST }}:2002/checkout/"
+"""
+    )
+)</code></pre>
+        <div class="callout">
+          <strong>Lưu ý về cấu hình Port:</strong>
+          <ul>
+            <li>
+              <code class="inline">Port 2002</code> được chọn để tránh xung đột
+              vì các cổng <code class="inline">2000</code> (Learning) và
+              <code class="inline">2001</code> (Payment History) đã được sử dụng
+              bởi các MFE trước đó.
+            </li>
+            <li>
+              Giá trị cổng này đã được cấu hình
+              <strong>khớp hoàn toàn</strong> với nội dung trong file
+              <code class="inline">.env</code> của repository
+              <code class="inline">frontend-app-checkout</code>, giúp đảm bảo
+              tính đồng bộ khi chạy ở chế độ dev.
+            </li>
+          </ul>
+        </div>
+
+        <h2 id="enable-build">5. Kích hoạt và Build Image</h2>
+        <h3>5.1 Lưu và bật Plugin</h3>
+        <pre><button class="copy">Copy</button><code>tutor config save
+tutor plugins enable checkout</code></pre>
+
+        <h3>5.2 Build lại MFE Image</h3>
+        <p>
+          Việc này giúp đăng ký ứng dụng "checkout" vào trình quản lý MFE tổng
+          quát:
+        </p>
+        <pre><button class="copy">Copy</button><code>tutor images build mfe</code></pre>
+
+        <h3>5.3 Build MFE Checkout (Dev)</h3>
+        <pre><button class="copy">Copy</button><code>tutor images build checkout-dev</code></pre>
+
+        <h2 id="start">6. Khởi chạy và Kiểm tra</h2>
+        <p>Khởi động môi trường phát triển:</p>
+        <pre><button class="copy">Copy</button><code>tutor dev start</code></pre>
+        <div class="callout">
+          <strong>Thông tin truy cập:</strong>
+          <ul>
+            <li>
+              URL Dev:
+              <code class="inline"
+                >http://apps.local.openedx.io:2002/checkout/</code
+              >
+            </li>
+            <li>
+              Đảm bảo rằng LMS đã được cấu hình trỏ đến URL này thông qua
+              plugin.
+            </li>
+          </ul>
+        </div>
+
+        <h2 id="faq">7. FAQ nhanh</h2>
+        <ul>
+          <li>
+            <strong>Tại sao chọn port 2002?</strong> Để tránh xung đột với các
+            MFE khác (như Learning MFE thường dùng 2000, Payment History dùng
+            2001).
+          </li>
+          <li>
+            <strong>Lỗi 404 khi truy cập?</strong> Kiểm tra xem bạn đã chạy
+            <code class="inline">tutor config save</code> và restart lại các
+            container chưa.
+          </li>
+        </ul>
+
+        <p style="margin-top: 24px"><a href="#top">▲ Lên đầu trang</a></p>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="../assets/layout.js" defer></script>
+  </body>
+</html>

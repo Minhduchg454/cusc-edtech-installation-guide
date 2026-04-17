@@ -188,6 +188,36 @@ namespaces=['cusc_edx_api'], route='api/cusc-edx-api/ping/')
         <pre><button class="copy">Copy</button><code>curl -i http://localhost:8000/api/cusc-edx-api/ping/
 # → 200 OK
 # {"ok": true, "app": "cusc_edx_api"}</code></pre>
+        <h3 id="fix-reload">
+          3.6) Sửa lỗi không cập nhật api được sau khi chỉnh sửa (nếu có)
+        </h3>
+        <p>Tìm ID của container LMS đang chạy:</p>
+        <pre><button class="copy">Copy</button><code>docker ps | grep lms</code></pre>
+
+        <p>
+          Vào trực tiếp container đó bằng quyền root (thay
+          <code>tutor_dev-lms-1</code> bằng ID hoặc tên container của bạn):
+        </p>
+        <pre><button class="copy">Copy</button><code>docker exec -it -u root tutor_dev-lms-1 bash</code></pre>
+
+        <p>Xóa sạch và dọn dẹp (Thực hiện bên trong Container):</p>
+        <pre><button class="copy">Copy</button><code># Xóa thư mục cứng đang chặn đường
+rm -rf /openedx/venv/lib/python3.11/site-packages/cusc_edx_api
+
+# Cài đặt lại link editable
+cd /mnt/cusc_edx_api
+pip install -e .
+
+# Kiểm tra xem nó đã trỏ về /mnt chưa
+python -c "import cusc_edx_api; print(cusc_edx_api.__path__)"</code></pre>
+
+        <p>
+          Khởi động lại Django bên trong container (Không cần restart Docker):
+        </p>
+        <pre><button class="copy">Copy</button><code>touch /openedx/edx-platform/lms/urls.py</code></pre>
+
+        <p>Kiểm tra kết quả:</p>
+        <pre><button class="copy">Copy</button><code>curl -i http://localhost:8000/api/cusc-edx-api/ping/</code></pre>
 
         <hr />
         <h2 id="apis">4) Các API chính (tóm tắt)</h2>
