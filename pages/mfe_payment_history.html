@@ -74,7 +74,7 @@ from tutor import hooks
 def add_payment_history(mfes):
     mfes["payment-history"] = {
         "repository": "https://github.com/Minhduchg454/frontend-app-payment-history.git",
-        "port": 2001,
+        "port": 2003,
     }
     return mfes
 
@@ -88,12 +88,12 @@ MFE_CONFIG["PAYMENT_HISTORY_URL"] = "http://apps.{{ LMS_HOST }}/payment-history/
     )
 )
 
-# Cấu hình cho môi trường Development (Port 2001)
+# Cấu hình cho môi trường Development (Port 2003)
 hooks.Filters.ENV_PATCHES.add_item(
     (
         "mfe-lms-development-settings",
         """
-MFE_CONFIG["PAYMENT_HISTORY_URL"] = "http://apps.{{ LMS_HOST }}:2001/payment-history/"
+MFE_CONFIG["PAYMENT_HISTORY_URL"] = "http://apps.{{ LMS_HOST }}:2003/payment-history/"
 """
     )
 )</code></pre>
@@ -102,7 +102,7 @@ MFE_CONFIG["PAYMENT_HISTORY_URL"] = "http://apps.{{ LMS_HOST }}:2001/payment-his
           <strong>Lưu ý về cấu hình Port & Môi trường:</strong>
           <ul>
             <li>
-              <code class="inline">Port 2001</code> được sử dụng để phân biệt
+              <code class="inline">Port 2003</code> được sử dụng để phân biệt
               với Learning MFE (2000) và Checkout MFE (2002).
             </li>
             <li>
@@ -137,7 +137,7 @@ tutor plugins enable payment_history</code></pre>
             <li>
               URL Dev:
               <code class="inline"
-                >http://apps.local.openedx.io:2001/payment-history/</code
+                >http://apps.local.openedx.io:2003/payment-history/</code
               >
             </li>
           </ul>
