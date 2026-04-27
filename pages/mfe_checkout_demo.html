@@ -41,6 +41,83 @@
           <br />
         </p>
 
+        <h2 id="config-email">0. Cấu hình hệ thống Email (SMTP)</h2>
+        <p>Để hệ thống có thể gửi thông báo thanh toán và xác nhận đơn hàng, bạn cần cấu hình tài khoản gửi mail (ví dụ: Gmail).</p>
+
+        <h3>0.1 Lấy App Password từ Google</h3>
+        <p>Gmail yêu cầu "Mật khẩu ứng dụng" để cho phép các ứng dụng bên thứ ba gửi mail:</p>
+        <ol>
+          <li>Truy cập <a href="https://myaccount.google.com/apppasswords" target="_blank">Google App Passwords</a>.</li>
+          <li>Đăng nhập tài khoản Gmail hệ thống (ví dụ: <code>taolink14@gmail.com</code>).</li>
+          <li>Đặt tên ứng dụng (ví dụ: "Open edX Checkout") và nhấn <strong>Tạo</strong>.</li>
+          <li>Sao chép mã <strong>16 ký tự</strong> được cung cấp (Lưu ý: Xóa bỏ các khoảng trắng).</li>
+        </ol>
+
+        <h3>0.2 Thiết lập cấu hình trên Terminal</h3>
+        <p>Sử dụng lệnh <code>tutor config save</code> để thiết lập các thông số SMTP:</p>
+        <pre><button class="copy">Copy</button><code>tutor config save \
+  --set SMTP_HOST=smtp.gmail.com \
+  --set SMTP_PORT=587 \
+  --set SMTP_USE_TLS=true \
+  --set SMTP_USERNAME=taolink14@gmail.com \
+  --set SMTP_PASSWORD=APP_PASSWORD_CUA_BAN \
+  --set DEFAULT_FROM_EMAIL="Open edX <taolink14@gmail.com>" \
+  --set CONTACT_EMAIL=taolink14@gmail.com</code></pre>
+        
+        <p>Khởi động lại môi trường tương ứng để áp dụng thay đổi:</p>
+        <p><em>Dành cho môi trường Development:</em></p>
+        <pre><button class="copy">Copy</button><code>tutor dev restart</code></pre>
+        <p><em>Dành cho môi trường Production (Local):</em></p>
+        <pre><button class="copy">Copy</button><code>tutor local restart</code></pre>
+
+       
+
+        <h3 id="email-api">0.3 Kiểm tra gửi mail qua API</h3>
+        <p>Đảm bảo các plugin <code>cusc_edx_config</code> và <code>cusc_edx_api</code> đã hoạt động.</p>
+        
+        <h4>0.3.1 Kiểm tra Plugin và Build</h4>
+        <pre><button class="copy">Copy</button><code>tutor plugins list | grep cusc_edx_config  # Trạng thái phải là: enabled
+# Build lại image để cập nhật API
+tutor images build openedx
+tutor local start</code></pre>
+
+        <h4>0.3.2 Cấu hình file Hosts</h4>
+        <pre><button class="copy">Copy</button><code>sudo nano /etc/hosts</code></pre>
+        <p>Thêm dòng sau:</p>
+        <pre><code>127.0.0.1 local.openedx.io localhost</code></pre>
+
+        <h4>0.3.3 Test API bằng Curl</h4>
+        <p>Kiểm tra ping và gửi mail thử nghiệm:</p>
+        <pre><button class="copy">Copy</button><code># Kiểm tra API sống
+curl -i http://local.openedx.io/api/cusc-edx-api/ping/</code></pre>
+<p>Kết quả mong đợi:</p>
+<div class="callout warn">HTTP/1.1 200 OK <br>
+Content-Language: en <br>
+Content-Length: 40 <br>
+Content-Type: application/json <br>
+Server: Caddy <br>
+Vary: Accept-Language, origin, Cookie <br>
+X-Frame-Options: SAMEORIGIN <br>
+Date: Mon, 27 Apr 2026 01:26:34 GMT <br>
+
+{"ok ngon": true, "app": "cusc_edx_api"}
+        </div>
+
+ <pre><button class="copy">Copy</button><code># Gửi mail qua endpoint API
+curl -i -X POST http://local.openedx.io/api/cusc-edx-api/mailer/send-simple/</code></pre>
+<p>Kết quả mong đợi:</p>
+
+<div class="callout warn">HTTP/1.1 200 OK <br>
+Content-Language: en <br>
+Content-Length: 23 <br>
+Content-Type: application/json <br>
+Server: Caddy <br>
+Vary: Accept-Language, origin, Cookie <br>
+X-Frame-Options: SAMEORIGIN <br>
+Date: Mon, 27 Apr 2026 01:27:53 GMT
+</div>
+<p>Mail đã được gửi đến địa chỉ bạn đăng ký</p>
+
         <h2 id="clone-repo">1. Clone repo và cài đặt thư viện</h2>
         <p>Di chuyển đến thư mục làm việc của frontend và tải mã nguồn:</p>
         <pre><button class="copy">Copy</button><code>cd ~/dev-frontend
@@ -253,7 +330,6 @@ tutor plugins enable checkout</code></pre>
             </li>
           </ul>
         </div>
-
         <h2 id="faq">7. FAQ nhanh</h2>
         <ul>
           <li>
